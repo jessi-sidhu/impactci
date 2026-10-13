@@ -48,10 +48,8 @@ fn walk(node: Node, src: &[u8], out: &mut ParsedFile) {
             read_from_import(node, src, out);
             return;
         }
-        "call" => {
-            if is_dynamic_import(node, src) {
-                out.dynamic_imports.push(line_of(node));
-            }
+        "call" if is_dynamic_import(node, src) => {
+            out.dynamic_imports.push(line_of(node));
         }
         _ => {}
     }

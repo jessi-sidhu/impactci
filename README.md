@@ -22,10 +22,24 @@ tests the change can reach, runs only those tests, and comments the blast radius
 - one line of YAML
 - conservative — when it's unsure it runs more tests, never fewer
 
+## Usage (so far)
+
+```
+cargo build --release
+
+# what does each module import?
+./target/release/blast imports path/to/repo
+
+# which modules can this branch affect?
+./target/release/blast --diff main..HEAD --json path/to/repo
+```
+
+`--diff` always compares against the merge base, same as a GitHub PR.
+
 ## Roadmap
 
-- [ ] week 1: parser (tree-sitter import resolution), tested on Flask and Requests
-- [ ] week 2: dependency graph + `blast --diff main..HEAD`, JSON output
+- [x] week 1: parser (tree-sitter import resolution), tested on Flask and Requests
+- [x] week 2: dependency graph + `blast --diff main..HEAD`, JSON output
 - [ ] week 3: test selection + safety fallbacks (dynamic imports, conftest, config changes)
 - [ ] week 4: replay repo history, compare against testmon and full runs
 - [ ] week 5: package the GitHub Action, PR comment, deploy on real repos

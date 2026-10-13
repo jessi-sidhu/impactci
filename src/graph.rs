@@ -33,6 +33,13 @@ impl Graph {
                     Resolution::Unresolved { reason } => unresolved[id].push(reason),
                 }
             }
+            // strings like "pkg.mod:obj" only count if they hit one of our modules;
+            // a string that doesn't resolve is just a string
+            for r in &m.parsed.string_refs {
+                if let Resolution::Internal { modules } = project.resolve(id, r) {
+                    targets.extend(modules);
+                }
+            }
             for t in targets {
                 graph.add_edge(nodes[id], nodes[t], ());
             }
@@ -141,6 +148,24 @@ mod tests {
         let g = Graph::build(&p);
         assert_eq!(g.fan_in(0), 2);
         assert_eq!(g.fan_in(2), 0);
+    }
+
+    #[test]
+    fn string_refs_add_edges() {
+        let p = project(&[
+            ("pkg", ""),
+            ("pkg.plugins", ""),
+            (
+                "conftest",
+                "pytest_plugins = ['pkg.plugins', 'other.thing']\n",
+            ),
+        ]);
+        let g = Graph::build(&p);
+        assert_eq!(
+            names(&p, g.dependents(&[1])),
+            vec!["pkg.plugins", "conftest"]
+        );
+        assert!(g.unresolved[2].is_empty());
     }
 
     #[test]

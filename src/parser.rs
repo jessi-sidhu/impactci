@@ -178,10 +178,8 @@ fn string_literal(node: Node, src: &[u8]) -> Option<String> {
     let mut content = String::new();
     for child in node.children(&mut cursor) {
         match child.kind() {
-            "string_start" => {
-                if text(child, src).to_ascii_lowercase().contains('f') {
-                    return None;
-                }
+            "string_start" if text(child, src).to_ascii_lowercase().contains('f') => {
+                return None;
             }
             "string_content" => content.push_str(text(child, src)),
             "interpolation" | "escape_sequence" => return None,

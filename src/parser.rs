@@ -19,9 +19,14 @@ pub struct Import {
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct ParsedFile {
     pub imports: Vec<Import>,
-    /// Lines that call `importlib.import_module`, `__import__` and friends.
-    /// We can't follow these statically, so callers should treat them as "could import anything".
+    /// Lines that call `importlib.import_module`, `__import__` and friends with something
+    /// other than a string literal. We can't follow these statically, so callers should
+    /// treat them as "could import anything".
     pub dynamic_imports: Vec<usize>,
+    /// String literals that look like dotted module paths (`"tests.helpers"`, `"pkg.mod:obj"`).
+    /// Things like `pytest_plugins`, `import_string("...")` and config paths show up here.
+    /// The resolver decides whether they're actually ours.
+    pub string_refs: Vec<Import>,
 }
 
 pub fn parse_source(src: &str) -> Result<ParsedFile> {
@@ -48,8 +53,17 @@ fn walk(node: Node, src: &[u8], out: &mut ParsedFile) {
             read_from_import(node, src, out);
             return;
         }
-        "call" if is_dynamic_import(node, src) => {
-            out.dynamic_imports.push(line_of(node));
+        "call" if is_dynamic_import(node, src) => match first_string_arg(node, src) {
+            Some(lit) if !lit.starts_with('.') => out.imports.push(literal_import(&lit, node)),
+            _ => out.dynamic_imports.push(line_of(node)),
+        },
+        "string" => {
+            if let Some(lit) = string_literal(node, src)
+                && looks_like_module_path(&lit)
+            {
+                out.string_refs.push(literal_import(&lit, node));
+            }
+            return;
         }
         _ => {}
     }
@@ -148,6 +162,68 @@ fn is_dynamic_import(call: Node, src: &[u8]) -> bool {
     )
 }
 
+/// The first positional argument, if it's a plain string literal.
+fn first_string_arg(call: Node, src: &[u8]) -> Option<String> {
+    let args = call.child_by_field_name("arguments")?;
+    let first = args.named_child(0)?;
+    if first.kind() != "string" {
+        return None;
+    }
+    string_literal(first, src)
+}
+
+/// Contents of a string node, or None for f-strings and anything with interpolation.
+fn string_literal(node: Node, src: &[u8]) -> Option<String> {
+    let mut cursor = node.walk();
+    let mut content = String::new();
+    for child in node.children(&mut cursor) {
+        match child.kind() {
+            "string_start" => {
+                if text(child, src).to_ascii_lowercase().contains('f') {
+                    return None;
+                }
+            }
+            "string_content" => content.push_str(text(child, src)),
+            "interpolation" | "escape_sequence" => return None,
+            _ => {}
+        }
+    }
+    Some(content)
+}
+
+/// `a.b`, `a.b.C` or `a.b:obj`. Needs at least one dot or colon so we don't pick up
+/// every short string in the codebase.
+fn looks_like_module_path(s: &str) -> bool {
+    if s.len() > 200 || !(s.contains('.') || s.contains(':')) {
+        return false;
+    }
+    let module = s.split_once(':').map_or(s, |(m, _)| m);
+    !module.is_empty()
+        && module.split('.').all(|part| {
+            let mut c = part.chars();
+            matches!(c.next(), Some(ch) if ch == '_' || ch.is_ascii_alphabetic())
+                && c.all(|ch| ch == '_' || ch.is_ascii_alphanumeric())
+        })
+}
+
+/// `"a.b:obj"` -> module `a.b`. `"a.b.c"` -> `from a.b import c`, so it works whether
+/// `c` is a submodule or an attribute.
+fn literal_import(lit: &str, node: Node) -> Import {
+    let (module, names) = match lit.split_once(':') {
+        Some((m, _)) => (m.to_string(), vec![]),
+        None => match lit.rsplit_once('.') {
+            Some((m, last)) => (m.to_string(), vec![last.to_string()]),
+            None => (lit.to_string(), vec![]),
+        },
+    };
+    Import {
+        module,
+        names,
+        level: 0,
+        line: line_of(node),
+    }
+}
+
 fn text<'a>(node: Node, src: &'a [u8]) -> &'a str {
     node.utf8_text(src).unwrap_or("")
 }
@@ -240,9 +316,57 @@ def f():
 
     #[test]
     fn dynamic_imports_flagged() {
-        let src = "import importlib\nm = importlib.import_module('x')\nn = __import__('y')\n";
+        let src = "import importlib\nm = importlib.import_module(name)\nn = __import__(f'y{x}')\n";
         let parsed = parse_source(src).unwrap();
         assert_eq!(parsed.dynamic_imports, vec![2, 3]);
+    }
+
+    #[test]
+    fn literal_dynamic_imports_become_imports() {
+        let src = "import importlib\nimportlib.import_module('chardet')\n__import__('pkg.mod')\n";
+        let parsed = parse_source(src).unwrap();
+        assert!(parsed.dynamic_imports.is_empty());
+        let got: Vec<_> = parsed
+            .imports
+            .iter()
+            .map(|i| (i.module.as_str(), i.names.clone()))
+            .collect();
+        assert_eq!(
+            got,
+            vec![
+                ("importlib", vec![]),
+                ("chardet", vec![]),
+                ("pkg", s(&["mod"]))
+            ]
+        );
+    }
+
+    #[test]
+    fn relative_literal_is_still_dynamic() {
+        let parsed = parse_source("import_module('.views', package=__name__)\n").unwrap();
+        assert_eq!(parsed.dynamic_imports, vec![1]);
+    }
+
+    #[test]
+    fn string_refs() {
+        let src = r#"
+pytest_plugins = ["tests.fixtures.db"]
+app.config.from_object("myapp.settings:Prod")
+greeting = "hello world"
+version = "1.2.3"
+path = "docs/index.rst"
+name = f"pkg.{x}"
+"#;
+        let parsed = parse_source(src).unwrap();
+        let got: Vec<_> = parsed
+            .string_refs
+            .iter()
+            .map(|i| (i.module.as_str(), i.names.clone()))
+            .collect();
+        assert_eq!(
+            got,
+            vec![("tests.fixtures", s(&["db"])), ("myapp.settings", vec![])]
+        );
     }
 
     #[test]

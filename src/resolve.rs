@@ -214,7 +214,12 @@ impl Project {
 
 /// Dotted name based on `__init__.py` packages: climb while the parent dir is a package.
 /// `src/flask/json/tag.py` -> `flask.json.tag`, `tests/test_x.py` -> `test_x`.
+///
+/// A dir without `__init__.py` sitting inside a real package (flask's `sansio/`) is a
+/// namespace subpackage, so we keep climbing through it.
 fn package_name(root: &Path, rel: &Path) -> Option<String> {
+    let is_pkg = |d: &Path| !d.as_os_str().is_empty() && root.join(d).join("__init__.py").is_file();
+
     let stem = rel.file_stem()?.to_string_lossy().to_string();
     let mut parts = Vec::new();
     if stem != "__init__" {
@@ -222,7 +227,7 @@ fn package_name(root: &Path, rel: &Path) -> Option<String> {
     }
     let mut dir = rel.parent();
     while let Some(d) = dir {
-        if d.as_os_str().is_empty() || !root.join(d).join("__init__.py").is_file() {
+        if d.as_os_str().is_empty() || !(is_pkg(d) || d.parent().is_some_and(is_pkg)) {
             break;
         }
         parts.push(d.file_name()?.to_string_lossy().to_string());
@@ -282,11 +287,27 @@ mod tests {
             "/repo".into(),
             vec![
                 module("flask", "src/flask/__init__.py", "from .app import Flask\n"),
-                module("flask.app", "src/flask/app.py", "from . import json\nfrom .json.tag import T\nimport click\n"),
+                module(
+                    "flask.app",
+                    "src/flask/app.py",
+                    "from . import json\nfrom .json.tag import T\nimport click\n",
+                ),
                 module("flask.json", "src/flask/json/__init__.py", ""),
-                module("flask.json.tag", "src/flask/json/tag.py", "from ..globals import g\n"),
-                module("flask.globals", "src/flask/globals.py", "from ...nope import x\n"),
-                module("test_app", "tests/test_app.py", "import flask\nfrom flask.missing import y\n"),
+                module(
+                    "flask.json.tag",
+                    "src/flask/json/tag.py",
+                    "from ..globals import g\n",
+                ),
+                module(
+                    "flask.globals",
+                    "src/flask/globals.py",
+                    "from ...nope import x\n",
+                ),
+                module(
+                    "test_app",
+                    "tests/test_app.py",
+                    "import flask\nfrom flask.missing import y\n",
+                ),
             ],
         )
     }
@@ -328,7 +349,10 @@ mod tests {
     #[test]
     fn two_dots() {
         let p = project();
-        assert_eq!(names(&p, &resolve(&p, 3, 0)), vec!["flask", "flask.globals"]);
+        assert_eq!(
+            names(&p, &resolve(&p, 3, 0)),
+            vec!["flask", "flask.globals"]
+        );
     }
 
     #[test]

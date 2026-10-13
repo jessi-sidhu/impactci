@@ -217,7 +217,10 @@ mod tests {
 
     #[test]
     fn wildcard() {
-        assert_eq!(imports("from .compat import *\n"), vec![("compat".into(), s(&["*"]), 1)]);
+        assert_eq!(
+            imports("from .compat import *\n"),
+            vec![("compat".into(), s(&["*"]), 1)]
+        );
     }
 
     #[test]

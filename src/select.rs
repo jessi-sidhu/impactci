@@ -92,6 +92,9 @@ pub fn select(project: &Project, graph: &Graph, changes: &[Change], opts: &Optio
     }
 
     let affected = graph.dependents(&changed_modules);
+    let library_changed = changed_modules
+        .iter()
+        .any(|&id| !is_test_file(&project.modules[id].path));
 
     // modules that could import anything: test reaching them is always in
     let mut wildcards = BTreeSet::new();
@@ -114,8 +117,9 @@ pub fn select(project: &Project, graph: &Graph, changes: &[Change], opts: &Optio
         let reach = test_closure(project, graph, t);
         let hits_change = !reach.is_disjoint(&affected);
         let hit_wildcards: Vec<usize> = reach.intersection(&wildcards).copied().collect();
-        // a wildcard can only pull in code that changed, so a docs-only diff is still a no-op
-        let hits_wildcard = !hit_wildcards.is_empty() && !changed_modules.is_empty();
+        // a wildcard can only pull in code that changed, and nothing dynamically imports
+        // a test file, so a docs- or tests-only diff doesn't trigger it
+        let hits_wildcard = !hit_wildcards.is_empty() && library_changed;
         if hits_change || hits_wildcard {
             selected.push(project.modules[t].path.clone());
         }

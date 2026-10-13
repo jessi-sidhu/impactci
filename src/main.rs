@@ -1,12 +1,13 @@
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
-use clap::{Args, Parser, Subcommand};
+use clap::{Args, Parser, Subcommand, ValueEnum};
 use serde::Serialize;
 
 use blast::diff::{self, Change};
 use blast::graph::Graph;
 use blast::resolve::{Project, Resolution};
+use blast::select::{self, Mode, Options, Selection};
 
 #[derive(Parser)]
 #[command(
@@ -30,8 +31,22 @@ struct RunArgs {
     /// Project root
     #[arg(default_value = ".")]
     path: PathBuf,
+    #[arg(long, value_enum, default_value_t = Format::Text)]
+    format: Format,
+    /// Shorthand for --format json
     #[arg(long)]
     json: bool,
+    /// Don't force tests that reach a non-literal dynamic import
+    #[arg(long)]
+    trust_dynamic: bool,
+}
+
+#[derive(Clone, Copy, ValueEnum)]
+enum Format {
+    Text,
+    Json,
+    /// One test path per line, for `pytest $(blast --format pytest-args)`
+    PytestArgs,
 }
 
 #[derive(Subcommand)]
@@ -62,45 +77,68 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
         Some(Command::Imports { path, all, json }) => imports(path, all, json),
-        None => run(cli.run),
+        None => {
+            let mut args = cli.run;
+            if args.json {
+                args.format = Format::Json;
+            }
+            run(args)
+        }
     }
-}
-
-#[derive(Serialize)]
-struct Report {
-    changed: Vec<Change>,
-    affected_modules: Vec<String>,
 }
 
 fn run(args: RunArgs) -> Result<()> {
     let project = Project::load(&args.path)?;
     let graph = Graph::build(&project);
     let changed = changes_in_project(&args.path, &args.diff)?;
-
-    let changed_modules: Vec<usize> = changed
-        .iter()
-        .flat_map(|c| c.paths())
-        .filter_map(|p| project.module_by_path(p))
-        .collect();
-    let affected_modules = graph
-        .dependents(&changed_modules)
-        .into_iter()
-        .map(|id| project.modules[id].name.clone())
-        .collect();
-
-    let report = Report {
-        changed,
-        affected_modules,
+    let opts = Options {
+        trust_dynamic: args.trust_dynamic,
     };
-    if args.json {
-        println!("{}", serde_json::to_string_pretty(&report)?);
-    } else {
-        println!("{} changed files", report.changed.len());
-        for m in &report.affected_modules {
-            println!("  {m}");
+    let sel = select::select(&project, &graph, &changed, &opts);
+
+    match args.format {
+        Format::Json => println!("{}", serde_json::to_string_pretty(&sel)?),
+        Format::PytestArgs => {
+            // full run: print nothing, bare `pytest` already runs everything
+            if sel.mode == Mode::Selected {
+                if sel.selected_tests.is_empty() {
+                    eprintln!("blast: no tests affected");
+                }
+                for t in &sel.selected_tests {
+                    println!("{}", t.display());
+                }
+            }
         }
+        Format::Text => print_text(&sel),
     }
     Ok(())
+}
+
+fn print_text(sel: &Selection) {
+    println!("{} changed files", sel.changed.len());
+    for c in &sel.changed {
+        println!("  {} ({:?})", c.path.display(), c.kind);
+    }
+    println!("{} affected modules", sel.affected_modules.len());
+    for m in &sel.affected_modules {
+        println!("  {m}");
+    }
+    match sel.mode {
+        Mode::Full => println!("running the full suite ({} tests)", sel.total_tests),
+        Mode::Selected => println!(
+            "running {} of {} test files",
+            sel.selected_tests.len(),
+            sel.total_tests
+        ),
+    }
+    for r in &sel.reasons {
+        println!("  because {r}");
+    }
+    if sel.mode == Mode::Selected {
+        for t in &sel.selected_tests {
+            println!("  {}", t.display());
+        }
+    }
 }
 
 /// Changed files, with paths made relative to the project root (which may be a

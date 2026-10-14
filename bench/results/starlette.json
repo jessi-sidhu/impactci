@@ -1,0 +1,1328 @@
+[
+  {
+    "sha": "7b2948fe7b",
+    "subject": "Version 1.8.0 (#3660)",
+    "changed": [
+      "docs/release-notes.md",
+      "starlette/__init__.py"
+    ],
+    "mutated": {},
+    "total_tests": 1351,
+    "total_seconds": 4.58,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1351,
+        "seconds": 4.58,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1351,
+        "seconds": 4.58,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "5b544ced73",
+    "subject": "Send response start immediately when GZipMiddleware cannot compress (#36",
+    "changed": [
+      "starlette/middleware/gzip.py",
+      "tests/middleware/test_gzip.py"
+    ],
+    "mutated": {
+      "starlette/middleware/gzip.py": [
+        "IdentityResponder.send_with_compression"
+      ]
+    },
+    "total_tests": 1351,
+    "total_seconds": 4.69,
+    "regressions": 74,
+    "regression_files": [
+      "tests/middleware/test_cors.py",
+      "tests/middleware/test_gzip.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 108,
+        "seconds": 0.23,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 108,
+        "seconds": 0.23,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 74,
+        "seconds": 0.13,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "96d5023c55",
+    "subject": "Emit `Max-Age=0` on session cookie when `max_age=0` (#3651)",
+    "changed": [
+      "starlette/middleware/sessions.py",
+      "tests/middleware/test_session.py"
+    ],
+    "mutated": {
+      "starlette/middleware/sessions.py": [
+        "SessionMiddleware.__call__.send_wrapper"
+      ]
+    },
+    "total_tests": 1349,
+    "total_seconds": 5.98,
+    "regressions": 28,
+    "regression_files": [
+      "tests/middleware/test_session.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 29,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 29,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 29,
+        "seconds": 0.09,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "0a15da395d",
+    "subject": "Include allowed methods in StaticFiles 405 responses (#3640)",
+    "changed": [
+      "starlette/staticfiles.py",
+      "tests/test_staticfiles.py"
+    ],
+    "mutated": {
+      "starlette/staticfiles.py": [
+        "StaticFiles.get_response"
+      ]
+    },
+    "total_tests": 1347,
+    "total_seconds": 4.61,
+    "regressions": 71,
+    "regression_files": [
+      "tests/test_applications.py",
+      "tests/test_staticfiles.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 135,
+        "seconds": 0.37,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 135,
+        "seconds": 0.37,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 73,
+        "seconds": 0.25,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "ff5b4df55a",
+    "subject": "Close `Request.stream()` generators with `aclosing` (#3628)",
+    "changed": [
+      "pyproject.toml",
+      "starlette/middleware/base.py",
+      "starlette/requests.py",
+      "tests/middleware/test_base.py"
+    ],
+    "mutated": {
+      "starlette/middleware/base.py": [
+        "_CachedRequest.__init__",
+        "_CachedRequest.wrapped_receive"
+      ],
+      "starlette/requests.py": [
+        "Request._get_form",
+        "Request.body"
+      ]
+    },
+    "total_tests": 1347,
+    "total_seconds": 4.87,
+    "regressions": 255,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_body_limit.py",
+      "tests/middleware/test_gzip.py",
+      "tests/middleware/test_session.py",
+      "tests/test_exceptions.py",
+      "tests/test_formparsers.py",
+      "tests/test_requests.py",
+      "tests/test_staticfiles.py",
+      "tests/test_templates.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1347,
+        "seconds": 4.87,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1347,
+        "seconds": 4.87,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 758,
+        "seconds": 3.65,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "7cb2f09c18",
+    "subject": "Mark sessions as accessed when popping existing keys (#3186)",
+    "changed": [
+      "starlette/middleware/sessions.py",
+      "tests/middleware/test_session.py"
+    ],
+    "mutated": {
+      "starlette/middleware/sessions.py": [
+        "Session.pop"
+      ]
+    },
+    "total_tests": 1347,
+    "total_seconds": 4.54,
+    "regressions": 1,
+    "regression_files": [
+      "tests/middleware/test_session.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 27,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 27,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "c67ca4eeef",
+    "subject": "Add HTTP 103 Early Hints support (#3435)",
+    "changed": [
+      "docs/early-hints.md",
+      "mkdocs.yml",
+      "starlette/endpoints.py",
+      "starlette/middleware/base.py",
+      "starlette/middleware/gzip.py",
+      "starlette/requests.py",
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_gzip.py",
+      "tests/test_endpoints.py",
+      "tests/test_requests.py"
+    ],
+    "mutated": {
+      "starlette/endpoints.py": [
+        "HTTPEndpoint.dispatch"
+      ],
+      "starlette/middleware/base.py": [
+        "BaseHTTPMiddleware.__call__",
+        "BaseHTTPMiddleware.__call__.call_next",
+        "_CachedRequest.__init__"
+      ],
+      "starlette/middleware/gzip.py": [
+        "IdentityResponder.send_with_compression"
+      ],
+      "starlette/requests.py": [
+        "Request.send_early_hints"
+      ]
+    },
+    "total_tests": 1347,
+    "total_seconds": 4.67,
+    "regressions": 167,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_body_limit.py",
+      "tests/middleware/test_cors.py",
+      "tests/middleware/test_gzip.py",
+      "tests/test_applications.py",
+      "tests/test_authentication.py",
+      "tests/test_endpoints.py",
+      "tests/test_requests.py",
+      "tests/test_staticfiles.py",
+      "tests/test_templates.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1347,
+        "seconds": 4.67,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1347,
+        "seconds": 4.67,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 805,
+        "seconds": 3.61,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "b2e8750b4a",
+    "subject": "Bracket IPv6 hostnames in `URL.replace()` (#3617)",
+    "changed": [
+      "starlette/datastructures.py",
+      "tests/test_datastructures.py"
+    ],
+    "mutated": {
+      "starlette/datastructures.py": [
+        "URL.replace"
+      ]
+    },
+    "total_tests": 1333,
+    "total_seconds": 4.89,
+    "regressions": 32,
+    "regression_files": [
+      "tests/middleware/test_https_redirect.py",
+      "tests/middleware/test_trusted_host.py",
+      "tests/test_authentication.py",
+      "tests/test_datastructures.py",
+      "tests/test_requests.py",
+      "tests/test_routing.py",
+      "tests/test_staticfiles.py",
+      "tests/test_templates.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1333,
+        "seconds": 4.89,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1333,
+        "seconds": 4.89,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 912,
+        "seconds": 4.14,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "48e657ab0c",
+    "subject": "Resolve multipart charset before parsing fields (#3618)",
+    "changed": [
+      "starlette/formparsers.py",
+      "tests/test_formparsers.py"
+    ],
+    "mutated": {
+      "starlette/formparsers.py": [
+        "MultiPartParser.parse"
+      ]
+    },
+    "total_tests": 1333,
+    "total_seconds": 4.78,
+    "regressions": 89,
+    "regression_files": [
+      "tests/middleware/test_body_limit.py",
+      "tests/test_formparsers.py",
+      "tests/test_requests.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1333,
+        "seconds": 4.78,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1333,
+        "seconds": 4.78,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 124,
+        "seconds": 0.7,
+        "missed": [
+          "tests/test_requests.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 1 failing tests, e.g. tests/test_requests.py::tests.test_requests::test_request_stream_then_body[trio]"
+    ]
+  },
+  {
+    "sha": "6beaa2e39d",
+    "subject": "Preserve response trailers through GZipMiddleware (#3565)",
+    "changed": [
+      "docs/middleware.md",
+      "starlette/middleware/gzip.py",
+      "tests/middleware/test_gzip.py"
+    ],
+    "mutated": {
+      "starlette/middleware/gzip.py": [
+        "IdentityResponder.send_with_compression"
+      ]
+    },
+    "total_tests": 1331,
+    "total_seconds": 7.96,
+    "regressions": 68,
+    "regression_files": [
+      "tests/middleware/test_cors.py",
+      "tests/middleware/test_gzip.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 102,
+        "seconds": 0.42,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 102,
+        "seconds": 0.42,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 68,
+        "seconds": 0.29,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "2284ff008c",
+    "subject": "Stop file transfers when HTTP clients disconnect (#3523)",
+    "changed": [
+      "starlette/responses.py",
+      "tests/test_responses.py"
+    ],
+    "mutated": {
+      "starlette/responses.py": [
+        "FileResponse.__call__",
+        "FileResponse.__call__.stream_file",
+        "FileResponse._handle_multiple_ranges",
+        "FileResponse._handle_simple",
+        "FileResponse._handle_single_range",
+        "FileResponse._open_file"
+      ]
+    },
+    "total_tests": 1315,
+    "total_seconds": 8.79,
+    "regressions": 164,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_gzip.py",
+      "tests/test_applications.py",
+      "tests/test_responses.py",
+      "tests/test_staticfiles.py",
+      "tests/test_websockets.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1315,
+        "seconds": 8.79,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1315,
+        "seconds": 8.79,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 902,
+        "seconds": 7.15,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "85c3b7434f",
+    "subject": "Ignore Range when If-Range contains a weak ETag (#3567)",
+    "changed": [
+      "starlette/responses.py",
+      "tests/test_responses.py"
+    ],
+    "mutated": {
+      "starlette/responses.py": [
+        "FileResponse._should_use_range"
+      ]
+    },
+    "total_tests": 1279,
+    "total_seconds": 4.23,
+    "regressions": 6,
+    "regression_files": [
+      "tests/test_responses.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1279,
+        "seconds": 4.23,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1279,
+        "seconds": 4.23,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 146,
+        "seconds": 0.3,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "56d8858633",
+    "subject": "Drop Python 3.10 support (#3592)",
+    "changed": [
+      ".github/workflows/main.yml",
+      "pyproject.toml",
+      "starlette/_utils.py",
+      "starlette/testclient.py",
+      "tests/middleware/test_base.py",
+      "tests/test__utils.py",
+      "tests/test_config.py",
+      "tests/test_responses.py",
+      "tests/test_routing.py",
+      "tests/test_testclient.py",
+      "uv.lock"
+    ],
+    "mutated": {},
+    "total_tests": 1277,
+    "total_seconds": 4.24,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1277,
+        "seconds": 4.24,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1277,
+        "seconds": 4.24,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1178,
+        "seconds": 4.1,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "9774b08ef4",
+    "subject": "Stop multipart range responses on unexpected EOF (#3583)",
+    "changed": [
+      "starlette/responses.py",
+      "tests/test_responses.py"
+    ],
+    "mutated": {
+      "starlette/responses.py": [
+        "FileResponse._handle_multiple_ranges"
+      ]
+    },
+    "total_tests": 1277,
+    "total_seconds": 4.34,
+    "regressions": 12,
+    "regression_files": [
+      "tests/test_responses.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1277,
+        "seconds": 4.34,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1277,
+        "seconds": 4.34,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 144,
+        "seconds": 0.29,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "fada3631d8",
+    "subject": "Make it possible to run the tests without blockbuster (#3576)",
+    "changed": [
+      "tests/conftest.py"
+    ],
+    "mutated": {},
+    "total_tests": 1275,
+    "total_seconds": 4.75,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1275,
+        "seconds": 4.75,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1275,
+        "seconds": 4.75,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1275,
+        "seconds": 4.75,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "2269e9a08c",
+    "subject": "Version 1.7.0 (#3575)",
+    "changed": [
+      "docs/release-notes.md",
+      "starlette/__init__.py"
+    ],
+    "mutated": {},
+    "total_tests": 1275,
+    "total_seconds": 4.72,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1275,
+        "seconds": 4.72,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1275,
+        "seconds": 4.72,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "4fe55eb264",
+    "subject": "Preserve `FileResponse` status for range requests (#3568)",
+    "changed": [
+      "starlette/responses.py",
+      "tests/test_responses.py"
+    ],
+    "mutated": {
+      "starlette/responses.py": [
+        "FileResponse.__call__"
+      ]
+    },
+    "total_tests": 1275,
+    "total_seconds": 4.69,
+    "regressions": 124,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_gzip.py",
+      "tests/test_applications.py",
+      "tests/test_responses.py",
+      "tests/test_staticfiles.py",
+      "tests/test_websockets.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1275,
+        "seconds": 4.69,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1275,
+        "seconds": 4.69,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 192,
+        "seconds": 0.5,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "1f08daf162",
+    "subject": "Mark OpenTelemetryMiddleware as experimental (#3574)",
+    "changed": [
+      "docs/middleware.md",
+      "starlette/middleware/opentelemetry.py"
+    ],
+    "mutated": {},
+    "total_tests": 1273,
+    "total_seconds": 5.04,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.15,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.15,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.15,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "57de5fa9c2",
+    "subject": "Support HTTP response trailers in TestClient (#3563)",
+    "changed": [
+      "docs/testclient.md",
+      "starlette/testclient.py",
+      "tests/test_testclient.py"
+    ],
+    "mutated": {
+      "starlette/testclient.py": [
+        "_TestClientTransport.handle_request",
+        "_TestClientTransport.handle_request.send"
+      ]
+    },
+    "total_tests": 1273,
+    "total_seconds": 4.43,
+    "regressions": 1017,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_body_limit.py",
+      "tests/middleware/test_cors.py",
+      "tests/middleware/test_errors.py",
+      "tests/middleware/test_gzip.py",
+      "tests/middleware/test_https_redirect.py",
+      "tests/middleware/test_opentelemetry.py",
+      "tests/middleware/test_session.py",
+      "tests/middleware/test_trusted_host.py",
+      "tests/middleware/test_wsgi.py",
+      "tests/test_applications.py",
+      "tests/test_authentication.py",
+      "tests/test_background.py",
+      "tests/test_concurrency.py",
+      "tests/test_convertors.py",
+      "tests/test_endpoints.py",
+      "tests/test_exceptions.py",
+      "tests/test_formparsers.py",
+      "tests/test_requests.py",
+      "tests/test_responses.py",
+      "tests/test_routing.py",
+      "tests/test_schemas.py",
+      "tests/test_staticfiles.py",
+      "tests/test_templates.py",
+      "tests/test_testclient.py",
+      "tests/test_websockets.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1273,
+        "seconds": 4.43,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1273,
+        "seconds": 4.43,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1042,
+        "seconds": 2.98,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "03f12b7fcf",
+    "subject": "Allow HTTPException to use non-standard status codes (#3545)",
+    "changed": [
+      "docs/exceptions.md",
+      "starlette/exceptions.py",
+      "tests/test_exceptions.py"
+    ],
+    "mutated": {
+      "starlette/exceptions.py": [
+        "HTTPException.__init__"
+      ]
+    },
+    "total_tests": 1251,
+    "total_seconds": 4.43,
+    "regressions": 117,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_body_limit.py",
+      "tests/middleware/test_cors.py",
+      "tests/middleware/test_opentelemetry.py",
+      "tests/test_applications.py",
+      "tests/test_authentication.py",
+      "tests/test_exceptions.py",
+      "tests/test_formparsers.py",
+      "tests/test_routing.py",
+      "tests/test_staticfiles.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1251,
+        "seconds": 4.43,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1251,
+        "seconds": 4.43,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 127,
+        "seconds": 0.43,
+        "missed": [
+          "tests/test_routing.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 1 failing tests, e.g. tests/test_routing.py::tests.test_routing::test_mounted_middleware_does_not_catch_exception[trio]"
+    ]
+  },
+  {
+    "sha": "76fd00f1e2",
+    "subject": "Reject `WebSocket` requests to `StaticFiles` (#3532)",
+    "changed": [
+      "starlette/staticfiles.py",
+      "tests/test_staticfiles.py"
+    ],
+    "mutated": {
+      "starlette/staticfiles.py": [
+        "StaticFiles.__call__"
+      ]
+    },
+    "total_tests": 1249,
+    "total_seconds": 4.26,
+    "regressions": 74,
+    "regression_files": [
+      "tests/test_applications.py",
+      "tests/test_staticfiles.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 135,
+        "seconds": 0.34,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 135,
+        "seconds": 0.34,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 82,
+        "seconds": 0.24,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "fd662b17b9",
+    "subject": "Implement `identity` on `SimpleUser` and `UnauthenticatedUser` (#3271)",
+    "changed": [
+      "starlette/authentication.py",
+      "tests/test_authentication.py"
+    ],
+    "mutated": {
+      "starlette/authentication.py": [
+        "SimpleUser.identity",
+        "UnauthenticatedUser.identity"
+      ]
+    },
+    "total_tests": 1247,
+    "total_seconds": 4.25,
+    "regressions": 4,
+    "regression_files": [
+      "tests/test_authentication.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 11,
+        "seconds": 0.04,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 11,
+        "seconds": 0.04,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 11,
+        "seconds": 0.04,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "3ebcaf38fb",
+    "subject": "Run background tasks after the response is sent in `BaseHTTPMiddleware` ",
+    "changed": [
+      "starlette/middleware/base.py",
+      "tests/middleware/test_base.py"
+    ],
+    "mutated": {
+      "starlette/middleware/base.py": [
+        "BaseHTTPMiddleware.__call__.call_next",
+        "BaseHTTPMiddleware.__call__.call_next.send_no_error"
+      ]
+    },
+    "total_tests": 1247,
+    "total_seconds": 4.24,
+    "regressions": 69,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_body_limit.py",
+      "tests/test_staticfiles.py",
+      "tests/test_templates.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 191,
+        "seconds": 1.85,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 191,
+        "seconds": 1.85,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 71,
+        "seconds": 1.54,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "004250a3f2",
+    "subject": "Inline `OpenTelemetryResponder` and document middleware parameters (#352",
+    "changed": [
+      "starlette/middleware/opentelemetry.py"
+    ],
+    "mutated": {
+      "starlette/middleware/opentelemetry.py": [
+        "OpenTelemetryMiddleware.__call__",
+        "OpenTelemetryMiddleware.__call__.send_with_telemetry",
+        "OpenTelemetryMiddleware.__init__"
+      ]
+    },
+    "total_tests": 1245,
+    "total_seconds": 3.94,
+    "regressions": 55,
+    "regression_files": [
+      "tests/middleware/test_opentelemetry.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.15,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.15,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.15,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "bc833498bb",
+    "subject": "Handle standalone If-None-Match wildcards in StaticFiles (#3201)",
+    "changed": [
+      "starlette/staticfiles.py",
+      "tests/test_staticfiles.py"
+    ],
+    "mutated": {
+      "starlette/staticfiles.py": [
+        "StaticFiles.is_not_modified"
+      ]
+    },
+    "total_tests": 1245,
+    "total_seconds": 3.93,
+    "regressions": 48,
+    "regression_files": [
+      "tests/test_applications.py",
+      "tests/test_staticfiles.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 133,
+        "seconds": 0.33,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 133,
+        "seconds": 0.33,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 80,
+        "seconds": 0.23,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "4ac5302dd4",
+    "subject": "Detect blocking calls in coroutines using BlockBuster (#2858)",
+    "changed": [
+      "pyproject.toml",
+      "starlette/middleware/errors.py",
+      "tests/conftest.py",
+      "tests/middleware/test_base.py",
+      "tests/test_templates.py",
+      "uv.lock"
+    ],
+    "mutated": {
+      "starlette/middleware/errors.py": [
+        "ServerErrorMiddleware.__call__"
+      ]
+    },
+    "total_tests": 1233,
+    "total_seconds": 4.3,
+    "regressions": 435,
+    "regression_files": [
+      "tests/middleware/test_base.py",
+      "tests/middleware/test_body_limit.py",
+      "tests/middleware/test_cors.py",
+      "tests/middleware/test_errors.py",
+      "tests/middleware/test_gzip.py",
+      "tests/middleware/test_https_redirect.py",
+      "tests/middleware/test_opentelemetry.py",
+      "tests/middleware/test_session.py",
+      "tests/middleware/test_trusted_host.py",
+      "tests/test_applications.py",
+      "tests/test_authentication.py",
+      "tests/test_concurrency.py",
+      "tests/test_formparsers.py",
+      "tests/test_requests.py",
+      "tests/test_routing.py",
+      "tests/test_schemas.py",
+      "tests/test_staticfiles.py",
+      "tests/test_templates.py",
+      "tests/test_testclient.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1233,
+        "seconds": 4.3,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1233,
+        "seconds": 4.3,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1037,
+        "seconds": 4.04,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "8feafc6408",
+    "subject": "Add provider parameters to OpenTelemetryMiddleware (#3520)",
+    "changed": [
+      "docs/middleware.md",
+      "starlette/middleware/opentelemetry.py",
+      "tests/middleware/test_opentelemetry.py"
+    ],
+    "mutated": {
+      "starlette/middleware/opentelemetry.py": [
+        "OpenTelemetryMiddleware.__init__",
+        "OpenTelemetryResponder.__call__",
+        "OpenTelemetryResponder.__init__"
+      ]
+    },
+    "total_tests": 1233,
+    "total_seconds": 3.43,
+    "regressions": 55,
+    "regression_files": [
+      "tests/middleware/test_opentelemetry.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 55,
+        "seconds": 0.09,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "b4c1d18161",
+    "subject": "Handle empty and absent payloads in `WebSocketEndpoint.decode()` (#3372)",
+    "changed": [
+      "starlette/endpoints.py",
+      "tests/test_endpoints.py"
+    ],
+    "mutated": {
+      "starlette/endpoints.py": [
+        "WebSocketEndpoint.decode"
+      ]
+    },
+    "total_tests": 1227,
+    "total_seconds": 3.43,
+    "regressions": 16,
+    "regression_files": [
+      "tests/test_endpoints.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 100,
+        "seconds": 0.19,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 100,
+        "seconds": 0.19,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 30,
+        "seconds": 0.05,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "0fcaff1d1e",
+    "subject": "Accept collections in CORS configuration annotations (#3518)",
+    "changed": [
+      "starlette/middleware/cors.py"
+    ],
+    "mutated": {
+      "starlette/middleware/cors.py": [
+        "CORSMiddleware.__init__"
+      ]
+    },
+    "total_tests": 1221,
+    "total_seconds": 3.41,
+    "regressions": 36,
+    "regression_files": [
+      "tests/middleware/test_cors.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 36,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 36,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 36,
+        "seconds": 0.09,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "c9176b57af",
+    "subject": "Vary CORS preflight responses by their request inputs (#3517)",
+    "changed": [
+      "starlette/middleware/cors.py",
+      "tests/middleware/test_cors.py"
+    ],
+    "mutated": {
+      "starlette/middleware/cors.py": [
+        "CORSMiddleware.__init__"
+      ]
+    },
+    "total_tests": 1221,
+    "total_seconds": 3.42,
+    "regressions": 36,
+    "regression_files": [
+      "tests/middleware/test_cors.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 36,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 36,
+        "seconds": 0.09,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 36,
+        "seconds": 0.09,
+        "missed": []
+      }
+    },
+    "notes": []
+  }
+]

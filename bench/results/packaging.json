@@ -1,0 +1,830 @@
+[
+  {
+    "sha": "ef837aad31",
+    "subject": "test: avoid filtering compatible release examples (#1407)",
+    "changed": [
+      "tests/property/strategies.py",
+      "tests/property/test_specifier_matching.py"
+    ],
+    "mutated": {
+      "tests/property/strategies.py": [
+        "compatible_release_version_pairs",
+        "pep440_versions"
+      ]
+    },
+    "total_tests": 62493,
+    "total_seconds": 1.08,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "ae9d39c13b",
+    "subject": "fix: require the complete pylock filename to match (#1446)",
+    "changed": [
+      "src/packaging/pylock.py",
+      "tests/test_pylock.py"
+    ],
+    "mutated": {
+      "src/packaging/pylock.py": [
+        "is_valid_pylock_path"
+      ]
+    },
+    "total_tests": 62493,
+    "total_seconds": 1.06,
+    "regressions": 5,
+    "regression_files": [
+      "tests/test_pylock.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 106,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 106,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_pylock.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 5 failing tests, e.g. tests/test_pylock.py::tests.test_pylock::test_pylock_file_name[pylock..toml-False]"
+    ]
+  },
+  {
+    "sha": "332d716676",
+    "subject": "refactor(version): use explicit keywords in __replace__ (#1378)",
+    "changed": [
+      "src/packaging/version.py",
+      "tests/test_version.py"
+    ],
+    "mutated": {
+      "src/packaging/version.py": [
+        "Version.__replace__"
+      ]
+    },
+    "total_tests": 62492,
+    "total_seconds": 1.01,
+    "regressions": 1,
+    "regression_files": [
+      "tests/test_ranges.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62492,
+        "seconds": 1.01,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62492,
+        "seconds": 1.01,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_ranges.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 1 failing tests, e.g. tests/test_ranges.py::::tests.test_ranges"
+    ]
+  },
+  {
+    "sha": "fa52d7237a",
+    "subject": "Fix pylock filenames with mixed Windows path separators (#1436)",
+    "changed": [
+      "src/packaging/pylock.py",
+      "tests/test_pylock.py"
+    ],
+    "mutated": {
+      "src/packaging/pylock.py": [
+        "_path_name"
+      ]
+    },
+    "total_tests": 62491,
+    "total_seconds": 1.12,
+    "regressions": 37,
+    "regression_files": [
+      "tests/test_pylock.py",
+      "tests/test_pylock_select.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 105,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 105,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_pylock.py",
+          "tests/test_pylock_select.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 37 failing tests, e.g. tests/test_pylock.py::tests.test_pylock::test_dist_filename[dist1-example-1.0.tar.gz]"
+    ]
+  },
+  {
+    "sha": "2aada00b15",
+    "subject": "fix: reject empty arbitrary versions in requirements (#1430)",
+    "changed": [
+      "src/packaging/specifiers.py",
+      "tests/test_requirements.py",
+      "tests/test_specifiers.py"
+    ],
+    "mutated": {},
+    "total_tests": 62483,
+    "total_seconds": 1.06,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62483,
+        "seconds": 1.06,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62483,
+        "seconds": 1.06,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "2c87a33f66",
+    "subject": "fix(licenses): canonicalize_license_expression mangling case-distinct Li",
+    "changed": [
+      "src/packaging/licenses/__init__.py",
+      "tests/test_licenses.py"
+    ],
+    "mutated": {
+      "src/packaging/licenses/__init__.py": [
+        "canonicalize_license_expression"
+      ]
+    },
+    "total_tests": 62466,
+    "total_seconds": 1.03,
+    "regressions": 70,
+    "regression_files": [
+      "tests/test_licenses.py",
+      "tests/test_metadata.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 355,
+        "seconds": 0.01,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 355,
+        "seconds": 0.01,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_licenses.py",
+          "tests/test_metadata.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 70 failing tests, e.g. tests/test_licenses.py::tests.test_licenses::test_invalid_spdx_with_or_licenseref_forms[(MIT OR Apache-2.0) WITH Classpath-exception-2.0]"
+    ]
+  },
+  {
+    "sha": "0625596e50",
+    "subject": "fix: anchor the wheel build tag regex to the end of the part (#1427)",
+    "changed": [
+      "src/packaging/utils.py",
+      "tests/test_utils.py"
+    ],
+    "mutated": {},
+    "total_tests": 62462,
+    "total_seconds": 0.99,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62462,
+        "seconds": 0.99,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62462,
+        "seconds": 0.99,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "959bb79c06",
+    "subject": "fix(dependency-groups): collect errors from sibling includes after a fir",
+    "changed": [
+      "src/packaging/dependency_groups.py",
+      "tests/test_dependency_groups.py"
+    ],
+    "mutated": {
+      "src/packaging/dependency_groups.py": [
+        "DependencyGroupResolver._parse_group",
+        "DependencyGroupResolver._resolve",
+        "DependencyGroupResolver.resolve"
+      ]
+    },
+    "total_tests": 62460,
+    "total_seconds": 1.01,
+    "regressions": 37,
+    "regression_files": [
+      "tests/test_dependency_groups.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 41,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 41,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_dependency_groups.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 37 failing tests, e.g. tests/test_dependency_groups.py::tests.test_dependency_groups::test_cyclic_include"
+    ]
+  },
+  {
+    "sha": "d17cfaf0b7",
+    "subject": "perf(parser): avoid literal_eval for plain marker strings (#1429)",
+    "changed": [
+      "src/packaging/_parser.py",
+      "tests/test_markers.py"
+    ],
+    "mutated": {
+      "src/packaging/_parser.py": [
+        "process_python_str"
+      ]
+    },
+    "total_tests": 62458,
+    "total_seconds": 1.1,
+    "regressions": 1,
+    "regression_files": [
+      "tests/test_pylock_select.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62458,
+        "seconds": 1.1,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62458,
+        "seconds": 1.1,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_pylock_select.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 1 failing tests, e.g. tests/test_pylock_select.py::::tests.test_pylock_select"
+    ]
+  },
+  {
+    "sha": "f7c930eb18",
+    "subject": "docs: sphinx.ext.autodoc for pylock and requirements (#1393)",
+    "changed": [
+      "docs/pylock.rst",
+      "docs/requirements.rst",
+      "src/packaging/pylock.py",
+      "src/packaging/requirements.py"
+    ],
+    "mutated": {
+      "src/packaging/requirements.py": [
+        "Requirement.__init__"
+      ]
+    },
+    "total_tests": 62446,
+    "total_seconds": 1.56,
+    "regressions": 5359,
+    "regression_files": [
+      "tests/test_dependency_groups.py",
+      "tests/test_metadata.py",
+      "tests/test_requirements.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 5818,
+        "seconds": 0.28,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 5818,
+        "seconds": 0.28,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_dependency_groups.py",
+          "tests/test_metadata.py",
+          "tests/test_requirements.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 5359 failing tests, e.g. tests/test_dependency_groups.py::tests.test_dependency_groups::test_expand_contract_model_only_does_inner_lookup_once"
+    ]
+  },
+  {
+    "sha": "022ae6c6fe",
+    "subject": "fix: reject drive-relative license-file paths in metadata validation (#1",
+    "changed": [
+      "src/packaging/metadata.py",
+      "tests/test_metadata.py"
+    ],
+    "mutated": {
+      "src/packaging/metadata.py": [
+        "_Validator._process_license_files"
+      ]
+    },
+    "total_tests": 62446,
+    "total_seconds": 2.25,
+    "regressions": 13,
+    "regression_files": [
+      "tests/test_metadata.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 344,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 344,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_metadata.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 13 failing tests, e.g. tests/test_metadata.py::tests.test_metadata.TestMetadata::test_invalid_license_files[license_files0]"
+    ]
+  },
+  {
+    "sha": "2602dd07d8",
+    "subject": "fix(parser): reject whitespace in the URL token (#1379)",
+    "changed": [
+      "src/packaging/_tokenizer.py",
+      "tests/test_requirements.py"
+    ],
+    "mutated": {},
+    "total_tests": 62444,
+    "total_seconds": 2.11,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62444,
+        "seconds": 2.11,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62444,
+        "seconds": 2.11,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "23669b1b69",
+    "subject": "feat(pylock.select): fail on unknown extras and dependency groups (#1376",
+    "changed": [
+      "src/packaging/pylock.py",
+      "tests/test_pylock_select.py"
+    ],
+    "mutated": {
+      "src/packaging/pylock.py": [
+        "Pylock.select"
+      ]
+    },
+    "total_tests": 62438,
+    "total_seconds": 2.08,
+    "regressions": 32,
+    "regression_files": [
+      "tests/test_pylock_select.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 97,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 97,
+        "seconds": 0.02,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_pylock_select.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 32 failing tests, e.g. tests/test_pylock_select.py::tests.test_pylock_select::test_duplicate_packages"
+    ]
+  },
+  {
+    "sha": "9483cb8a74",
+    "subject": "perf(markers): speed up _format_marker and benchmark str(Marker) (#1371)",
+    "changed": [
+      "benchmarks/markers.py",
+      "src/packaging/markers.py"
+    ],
+    "mutated": {
+      "benchmarks/markers.py": [
+        "TimeMarkerSuite.time_str"
+      ],
+      "src/packaging/markers.py": [
+        "_format_marker"
+      ]
+    },
+    "total_tests": 62435,
+    "total_seconds": 1.64,
+    "regressions": 3985,
+    "regression_files": [
+      "tests/test_markers.py",
+      "tests/test_metadata.py",
+      "tests/test_pylock.py",
+      "tests/test_pylock_select.py",
+      "tests/test_requirements.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 1.64,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 1.64,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": [
+          "tests/test_markers.py",
+          "tests/test_metadata.py",
+          "tests/test_pylock.py",
+          "tests/test_pylock_select.py",
+          "tests/test_requirements.py"
+        ]
+      }
+    },
+    "notes": [
+      "testmon skipped 3985 failing tests, e.g. tests/test_markers.py::tests.test_markers.TestMarker::test_different_markers_different_hashes[python_version == \"2.7\" and (os_name == \"linux\" or sys_platform == \"win32\")-python_version == \"2.7\" and os_name == \"linux\" or sys_platform == \"win32\"]"
+    ]
+  },
+  {
+    "sha": "de7d962e83",
+    "subject": "ci(downstream): bump twine to 7.0.0, deselect readme_renderer 46 test (#",
+    "changed": [
+      "noxfile.py"
+    ],
+    "mutated": {},
+    "total_tests": 62435,
+    "total_seconds": 1.33,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 1.33,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 1.33,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "b9d249f585",
+    "subject": "perf(tests): disable more unused pytest plugins (#1390)",
+    "changed": [
+      "noxfile.py",
+      "pyproject.toml"
+    ],
+    "mutated": {
+      "noxfile.py": [
+        "downstream"
+      ]
+    },
+    "total_tests": 62435,
+    "total_seconds": 2.47,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 2.47,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 2.47,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "053c884615",
+    "subject": "tags: add interpreter_abi (#611)",
+    "changed": [
+      "docs/tags.rst",
+      "src/packaging/tags.py",
+      "tests/test_tags.py"
+    ],
+    "mutated": {},
+    "total_tests": 62435,
+    "total_seconds": 1.61,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 1.61,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62435,
+        "seconds": 1.61,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 62435,
+        "seconds": 1.61,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "55cbf1b942",
+    "subject": "fix(ranges): stop unbounded bounds sorting above each other (#1392)",
+    "changed": [
+      "src/packaging/_ranges.py",
+      "tests/test_ranges.py"
+    ],
+    "mutated": {
+      "src/packaging/_ranges.py": [
+        "LowerBound.__init__",
+        "UpperBound.__init__"
+      ]
+    },
+    "total_tests": 62434,
+    "total_seconds": 1.41,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62434,
+        "seconds": 1.41,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62434,
+        "seconds": 1.41,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "4840c3a681",
+    "subject": "perf(tests): skip coverage on 3.13t (#1391)",
+    "changed": [
+      "noxfile.py"
+    ],
+    "mutated": {
+      "noxfile.py": [
+        "tests"
+      ]
+    },
+    "total_tests": 62430,
+    "total_seconds": 1.38,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62430,
+        "seconds": 1.38,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62430,
+        "seconds": 1.38,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 62430,
+        "seconds": 1.38,
+        "missed": []
+      }
+    },
+    "notes": [
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "56dd80bca9",
+    "subject": "perf(tests): disable GC while collecting tests (#1389)",
+    "changed": [
+      "tests/conftest.py"
+    ],
+    "mutated": {},
+    "total_tests": 62430,
+    "total_seconds": 2.25,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 62430,
+        "seconds": 2.25,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 62430,
+        "seconds": 2.25,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 62430,
+        "seconds": 2.25,
+        "missed": []
+      }
+    },
+    "notes": []
+  }
+]

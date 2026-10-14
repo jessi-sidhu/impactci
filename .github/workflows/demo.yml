@@ -40,3 +40,20 @@ jobs:
           run: python -m pytest -q
           shadow: "true"
           comment: "false"
+
+  released:
+    # the published action, so the prebuilt binary download gets exercised
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - uses: jessi-sidhu/impactci@v0
+        with:
+          path: examples/demo
+          run: python -m pytest -q
+          comment: "false"

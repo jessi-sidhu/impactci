@@ -7,7 +7,7 @@
 | full suite | 100% | 100% | 30/30 | 0 |
 | blast | 54% | 55% | 15/30 | 0/25 commits |
 | blast --shallow-init | 54% | 55% | 15/30 | 0/25 commits |
-| testmon (warm db) | 24% | 29% | 0/30 | 2/25 commits |
+| testmon (warm db) | 24% | 29% | 0/30 | 1/25 commits |
 
 ## Per commit
 
@@ -21,7 +21,7 @@
 | `7cb2f09c18` | Mark sessions as accessed when popping existing keys (#3186) | 1 | 1 | 2% | 2% | 0% |
 | `c67ca4eeef` | Add HTTP 103 Early Hints support (#3435) | 6 | 167 | full | full | 60% |
 | `b2e8750b4a` | Bracket IPv6 hostnames in `URL.replace()` (#3617) | 1 | 32 | full | full | 68% |
-| `48e657ab0c` | Resolve multipart charset before parsing fields (#3618) | 1 | 89 | full | full | 9% **missed 1** |
+| `48e657ab0c` | Resolve multipart charset before parsing fields (#3618) | 1 | 89 | full | full | 9% |
 | `6beaa2e39d` | Preserve response trailers through GZipMiddleware (#3565) | 1 | 68 | 8% | 8% | 5% |
 | `2284ff008c` | Stop file transfers when HTTP clients disconnect (#3523) | 6 | 164 | full | full | 69% |
 | `85c3b7434f` | Ignore Range when If-Range contains a weak ETag (#3567) | 1 | 6 | full | full | 11% |
@@ -46,10 +46,10 @@
 
 ## Misses
 
-- `48e657ab0c` testmon (warm db): tests/test_requests.py
 - `03f12b7fcf` testmon (warm db): tests/test_routing.py
 
 ## Notes
 
-- `48e657ab0c`: testmon skipped 1 failing tests, e.g. tests/test_requests.py::tests.test_requests::test_request_stream_then_body[trio]
+- `48e657ab0c`: testmon skipped 1 failing tests, e.g. tests/test_requests.py::tests.test_requests::test_request_url_starlette_context[asyncio]
+- `48e657ab0c`: 1 missed tests pass on their own (order-dependent), not counted: tests/test_requests.py::tests.test_requests::test_request_url_starlette_context[asyncio]
 - `03f12b7fcf`: testmon skipped 1 failing tests, e.g. tests/test_routing.py::tests.test_routing::test_mounted_middleware_does_not_catch_exception[trio]

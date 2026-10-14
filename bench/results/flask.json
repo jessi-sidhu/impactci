@@ -1,0 +1,1327 @@
+[
+  {
+    "sha": "d086db856b",
+    "subject": "fix typing",
+    "changed": [
+      "src/flask/sansio/app.py"
+    ],
+    "mutated": {},
+    "total_tests": 494,
+    "total_seconds": 0.73,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.73,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.73,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 434,
+        "seconds": 0.7,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "329c32b916",
+    "subject": "fix dev",
+    "changed": [
+      "src/flask/app.py",
+      "tests/test_testing.py"
+    ],
+    "mutated": {},
+    "total_tests": 494,
+    "total_seconds": 0.73,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.73,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.73,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 434,
+        "seconds": 0.7,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "728c5e440a",
+    "subject": "drop support for Python 3.10 (#6168)",
+    "changed": [
+      ".github/workflows/tests.yaml",
+      "CHANGES.rst",
+      "docs/installation.rst",
+      "pyproject.toml",
+      "src/flask/cli.py",
+      "src/flask/helpers.py",
+      "src/flask/sessions.py",
+      "tests/test_appctx.py",
+      "tests/test_basic.py",
+      "tests/test_config.py",
+      "tests/test_json_tag.py",
+      "uv.lock"
+    ],
+    "mutated": {
+      "src/flask/cli.py": [
+        "SeparatedPathType.convert"
+      ],
+      "src/flask/helpers.py": [
+        "_CollectErrors.raise_any"
+      ],
+      "src/flask/sessions.py": [
+        "SessionInterface.get_expiration_time"
+      ]
+    },
+    "total_tests": 494,
+    "total_seconds": 0.52,
+    "regressions": 309,
+    "regression_files": [
+      "tests/test_appctx.py",
+      "tests/test_async.py",
+      "tests/test_basic.py",
+      "tests/test_blueprints.py",
+      "tests/test_cli.py",
+      "tests/test_converters.py",
+      "tests/test_helpers.py",
+      "tests/test_json.py",
+      "tests/test_logging.py",
+      "tests/test_regression.py",
+      "tests/test_reqctx.py",
+      "tests/test_request.py",
+      "tests/test_session_interface.py",
+      "tests/test_signals.py",
+      "tests/test_subclassing.py",
+      "tests/test_templating.py",
+      "tests/test_testing.py",
+      "tests/test_user_error_handler.py",
+      "tests/test_views.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.52,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.52,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 388,
+        "seconds": 0.44,
+        "missed": []
+      }
+    },
+    "notes": [
+      "testmon skipped 1 failing tests, e.g. tests/test_helpers.py::tests.test_helpers.TestHelpers::test_get_debug_flag[-False]",
+      "1 missed tests pass on their own (order-dependent), not counted: tests/test_helpers.py::tests.test_helpers.TestHelpers::test_get_debug_flag[-False]"
+    ]
+  },
+  {
+    "sha": "d73fa1cdcb",
+    "subject": "fix docs ref",
+    "changed": [
+      "src/flask/app.py"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.request_context",
+        "Flask.test_request_context"
+      ]
+    },
+    "total_tests": 494,
+    "total_seconds": 0.97,
+    "regressions": 277,
+    "regression_files": [
+      "tests/test_appctx.py",
+      "tests/test_async.py",
+      "tests/test_basic.py",
+      "tests/test_blueprints.py",
+      "tests/test_converters.py",
+      "tests/test_helpers.py",
+      "tests/test_json.py",
+      "tests/test_logging.py",
+      "tests/test_regression.py",
+      "tests/test_reqctx.py",
+      "tests/test_request.py",
+      "tests/test_session_interface.py",
+      "tests/test_signals.py",
+      "tests/test_subclassing.py",
+      "tests/test_templating.py",
+      "tests/test_testing.py",
+      "tests/test_user_error_handler.py",
+      "tests/test_views.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.97,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 0.97,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 277,
+        "seconds": 0.63,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "d318b68347",
+    "subject": "explain seek",
+    "changed": [
+      "src/flask/helpers.py"
+    ],
+    "mutated": {
+      "src/flask/helpers.py": [
+        "send_file"
+      ]
+    },
+    "total_tests": 494,
+    "total_seconds": 1.12,
+    "regressions": 2,
+    "regression_files": [
+      "tests/test_helpers.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 1.12,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 1.12,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 2,
+        "seconds": 0.01,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "2a8a38b051",
+    "subject": "support query in methodview",
+    "changed": [
+      "src/flask/views.py"
+    ],
+    "mutated": {},
+    "total_tests": 494,
+    "total_seconds": 1.59,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 1.59,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 1.59,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 23,
+        "seconds": 0.1,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "d8eaaba824",
+    "subject": "add `app.query` route decorator (#6133)",
+    "changed": [
+      "CHANGES.rst",
+      "src/flask/sansio/scaffold.py",
+      "tests/test_basic.py"
+    ],
+    "mutated": {
+      "src/flask/sansio/scaffold.py": [
+        "Scaffold.query"
+      ]
+    },
+    "total_tests": 494,
+    "total_seconds": 1.37,
+    "regressions": 1,
+    "regression_files": [
+      "tests/test_basic.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 1.37,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 494,
+        "seconds": 1.37,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 435,
+        "seconds": 1.3,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "05e9c6bd63",
+    "subject": "Fix `.partition(\":\")` usage on potential IPv6 addresses (#6096)",
+    "changed": [
+      "src/flask/app.py",
+      "src/flask/testing.py",
+      "tests/test_basic.py",
+      "tests/test_testing.py"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.run"
+      ],
+      "src/flask/testing.py": [
+        "FlaskClient.session_transaction"
+      ]
+    },
+    "total_tests": 493,
+    "total_seconds": 3.18,
+    "regressions": 41,
+    "regression_files": [
+      "tests/test_basic.py",
+      "tests/test_signals.py",
+      "tests/test_templating.py",
+      "tests/test_testing.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 493,
+        "seconds": 3.18,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 493,
+        "seconds": 3.18,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 434,
+        "seconds": 2.95,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "514fc6b3e8",
+    "subject": "Merge branch 'stable'",
+    "changed": [
+      "CHANGES.rst",
+      "docs/blueprints.rst",
+      "docs/errorhandling.rst",
+      "src/flask/app.py",
+      "src/flask/sansio/README.md"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.make_response"
+      ]
+    },
+    "total_tests": 491,
+    "total_seconds": 0.74,
+    "regressions": 235,
+    "regression_files": [
+      "tests/test_appctx.py",
+      "tests/test_async.py",
+      "tests/test_basic.py",
+      "tests/test_blueprints.py",
+      "tests/test_converters.py",
+      "tests/test_helpers.py",
+      "tests/test_json.py",
+      "tests/test_logging.py",
+      "tests/test_regression.py",
+      "tests/test_reqctx.py",
+      "tests/test_request.py",
+      "tests/test_session_interface.py",
+      "tests/test_signals.py",
+      "tests/test_subclassing.py",
+      "tests/test_templating.py",
+      "tests/test_testing.py",
+      "tests/test_user_error_handler.py",
+      "tests/test_views.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 491,
+        "seconds": 0.74,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 491,
+        "seconds": 0.74,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 235,
+        "seconds": 0.45,
+        "missed": []
+      }
+    },
+    "notes": [
+      "testmon skipped 1 failing tests, e.g. tests/test_helpers.py::tests.test_helpers.TestHelpers::test_get_debug_flag[-False]",
+      "1 missed tests pass on their own (order-dependent), not counted: tests/test_helpers.py::tests.test_helpers.TestHelpers::test_get_debug_flag[-False]"
+    ]
+  },
+  {
+    "sha": "8b4fd5d186",
+    "subject": "use header properties",
+    "changed": [
+      "tests/test_blueprints.py",
+      "tests/test_views.py"
+    ],
+    "mutated": {},
+    "total_tests": 491,
+    "total_seconds": 2.06,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 75,
+        "seconds": 0.28,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 75,
+        "seconds": 0.28,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 75,
+        "seconds": 0.28,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "6a2f545bfd",
+    "subject": "Merge branch 'stable'",
+    "changed": [
+      ".github/workflows/lock.yaml",
+      ".github/workflows/pre-commit.yaml",
+      ".github/workflows/publish.yaml",
+      ".github/workflows/tests.yaml",
+      ".github/workflows/zizmor.yaml",
+      ".pre-commit-config.yaml",
+      "examples/celery/pyproject.toml",
+      "examples/celery/src/task_app/__init__.py",
+      "examples/javascript/js_example/__init__.py",
+      "examples/javascript/pyproject.toml",
+      "examples/tutorial/pyproject.toml",
+      "pyproject.toml",
+      "src/flask/cli.py",
+      "tests/conftest.py",
+      "tests/test_cli.py",
+      "uv.lock"
+    ],
+    "mutated": {
+      "examples/celery/src/task_app/__init__.py": [
+        "create_app"
+      ]
+    },
+    "total_tests": 491,
+    "total_seconds": 2.2,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 491,
+        "seconds": 2.2,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 491,
+        "seconds": 2.2,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 491,
+        "seconds": 2.2,
+        "missed": []
+      }
+    },
+    "notes": [
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "36e4a824f3",
+    "subject": "Any for  CertParamType type",
+    "changed": [
+      "src/flask/cli.py"
+    ],
+    "mutated": {},
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation"
+    ]
+  },
+  {
+    "sha": "954f5684e4",
+    "subject": "update dev dependencies",
+    "changed": [
+      ".pre-commit-config.yaml",
+      "src/flask/cli.py",
+      "uv.lock"
+    ],
+    "mutated": {
+      "src/flask/cli.py": [
+        "CertParamType.convert",
+        "_set_debug"
+      ]
+    },
+    "total_tests": 0,
+    "total_seconds": 0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "dcbede0cb0",
+    "subject": "autoescape selection uses case-insensitive comparison (#6013)",
+    "changed": [
+      "CHANGES.rst",
+      "src/flask/sansio/app.py"
+    ],
+    "mutated": {
+      "src/flask/sansio/app.py": [
+        "App.select_jinja_autoescape"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "06ea505ce2",
+    "subject": "separate copy per call",
+    "changed": [
+      "pyproject.toml",
+      "src/flask/ctx.py",
+      "tests/test_reqctx.py",
+      "uv.lock"
+    ],
+    "mutated": {
+      "src/flask/ctx.py": [
+        "copy_current_request_context",
+        "copy_current_request_context.wrapper"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "258d68b6ff",
+    "subject": "Merge branch 'stable'",
+    "changed": [
+      "tests/test_reqctx.py"
+    ],
+    "mutated": {},
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation"
+    ]
+  },
+  {
+    "sha": "7ef2946fb5",
+    "subject": "remove unicode host test (#5962)",
+    "changed": [
+      "tests/test_reqctx.py"
+    ],
+    "mutated": {},
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 0,
+        "seconds": 0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation"
+    ]
+  },
+  {
+    "sha": "3a9d54f3da",
+    "subject": "Merge branch 'stable'",
+    "changed": [
+      "docs/patterns/streaming.rst",
+      "docs/templating.rst",
+      "src/flask/helpers.py"
+    ],
+    "mutated": {
+      "src/flask/helpers.py": [
+        "stream_with_context"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "c34d6e81fd",
+    "subject": "all teardown callbacks are called despite errors (#5928)",
+    "changed": [
+      "CHANGES.rst",
+      "docs/appcontext.rst",
+      "src/flask/app.py",
+      "src/flask/ctx.py",
+      "src/flask/helpers.py",
+      "tests/test_appctx.py",
+      "tests/test_basic.py",
+      "tests/test_blueprints.py",
+      "tests/test_helpers.py",
+      "tests/test_testing.py"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.do_teardown_appcontext",
+        "Flask.do_teardown_request"
+      ],
+      "src/flask/ctx.py": [
+        "AppContext.pop"
+      ],
+      "src/flask/helpers.py": [
+        "_CollectErrors.__enter__",
+        "_CollectErrors.__exit__",
+        "_CollectErrors.__init__",
+        "_CollectErrors.raise_any"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "7b0088693e",
+    "subject": "fix typing",
+    "changed": [
+      "src/flask/app.py"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.process_response"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "a411a2434b",
+    "subject": "add back opening session on context push",
+    "changed": [
+      "src/flask/ctx.py"
+    ],
+    "mutated": {
+      "src/flask/ctx.py": [
+        "AppContext._get_session",
+        "AppContext.push",
+        "AppContext.session"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "daca74d93a",
+    "subject": "Merge branch 'stable'",
+    "changed": [
+      "CHANGES.rst",
+      "src/flask/app.py",
+      "src/flask/ctx.py",
+      "src/flask/sessions.py",
+      "src/flask/templating.py",
+      "tests/test_basic.py"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.process_response"
+      ],
+      "src/flask/ctx.py": [
+        "AppContext.session"
+      ],
+      "src/flask/sessions.py": [
+        "SecureCookieSession.__init__",
+        "SecureCookieSession.__init__.on_update"
+      ],
+      "src/flask/templating.py": [
+        "_default_template_ctx_processor"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "d98eb69a35",
+    "subject": "revert cli test change",
+    "changed": [
+      "tests/test_cli.py"
+    ],
+    "mutated": {},
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation"
+    ]
+  },
+  {
+    "sha": "12e95c93b4",
+    "subject": "fix provide_automatic_options override (#5917)",
+    "changed": [
+      "CHANGES.rst",
+      "docs/config.rst",
+      "src/flask/sansio/app.py",
+      "tests/test_basic.py",
+      "tests/test_blueprints.py",
+      "tests/test_cli.py",
+      "tests/test_views.py"
+    ],
+    "mutated": {
+      "src/flask/sansio/app.py": [
+        "App.add_url_rule"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "d3b78fd18a",
+    "subject": "Merge remote-tracking branch 'origin/stable'",
+    "changed": [
+      "docs/tutorial/factory.rst",
+      "examples/tutorial/flaskr/__init__.py"
+    ],
+    "mutated": {
+      "examples/tutorial/flaskr/__init__.py": [
+        "create_app"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "5e621a2801",
+    "subject": "update domain matching tests for Werkzeug 3.2",
+    "changed": [
+      "pyproject.toml",
+      "tests/test_basic.py",
+      "uv.lock"
+    ],
+    "mutated": {},
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation"
+    ]
+  },
+  {
+    "sha": "4b8bde97d4",
+    "subject": "deprecate `should_ignore_error` (#5899)",
+    "changed": [
+      "CHANGES.rst",
+      "src/flask/app.py",
+      "src/flask/sansio/app.py"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.full_dispatch_request",
+        "Flask.wsgi_app"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "5880befcd2",
+    "subject": "Merge branch 'stable'",
+    "changed": [
+      ".pre-commit-config.yaml",
+      "docs/patterns/javascript.rst",
+      "pyproject.toml",
+      "src/flask/app.py",
+      "src/flask/sansio/app.py",
+      "src/flask/sessions.py"
+    ],
+    "mutated": {
+      "src/flask/app.py": [
+        "Flask.__init__",
+        "Flask.wsgi_app"
+      ],
+      "src/flask/sansio/app.py": [
+        "App.select_jinja_autoescape"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "809d5a8869",
+    "subject": "redirect defaults to 303 (#5898)",
+    "changed": [
+      "CHANGES.rst",
+      "docs/api.rst",
+      "src/flask/helpers.py",
+      "src/flask/sansio/app.py"
+    ],
+    "mutated": {
+      "src/flask/helpers.py": [
+        "redirect"
+      ],
+      "src/flask/sansio/app.py": [
+        "App.redirect"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  },
+  {
+    "sha": "96a01e420b",
+    "subject": "Merge branch 'stable'",
+    "changed": [
+      ".github/workflows/pre-commit.yaml",
+      ".github/workflows/publish.yaml",
+      ".github/workflows/tests.yaml",
+      ".pre-commit-config.yaml",
+      "src/flask/sessions.py",
+      "uv.lock"
+    ],
+    "mutated": {
+      "src/flask/sessions.py": [
+        "SessionMixin.permanent"
+      ]
+    },
+    "total_tests": 1,
+    "total_seconds": 0.0,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 1,
+        "seconds": 0.0,
+        "missed": []
+      }
+    },
+    "notes": [
+      "1 tests already failing before mutation",
+      "mutants survived the full suite (untested code)"
+    ]
+  }
+]

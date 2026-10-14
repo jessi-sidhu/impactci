@@ -378,7 +378,7 @@
       ]
     },
     "total_tests": 1333,
-    "total_seconds": 4.78,
+    "total_seconds": 4.39,
     "regressions": 89,
     "regression_files": [
       "tests/middleware/test_body_limit.py",
@@ -389,26 +389,25 @@
       "blast": {
         "mode": "full",
         "tests": 1333,
-        "seconds": 4.78,
+        "seconds": 4.39,
         "missed": []
       },
       "blast --shallow-init": {
         "mode": "full",
         "tests": 1333,
-        "seconds": 4.78,
+        "seconds": 4.39,
         "missed": []
       },
       "testmon (warm db)": {
         "mode": "selected",
         "tests": 124,
-        "seconds": 0.7,
-        "missed": [
-          "tests/test_requests.py"
-        ]
+        "seconds": 0.68,
+        "missed": []
       }
     },
     "notes": [
-      "testmon skipped 1 failing tests, e.g. tests/test_requests.py::tests.test_requests::test_request_stream_then_body[trio]"
+      "testmon skipped 1 failing tests, e.g. tests/test_requests.py::tests.test_requests::test_request_url_starlette_context[asyncio]",
+      "1 missed tests pass on their own (order-dependent), not counted: tests/test_requests.py::tests.test_requests::test_request_url_starlette_context[asyncio]"
     ]
   },
   {
@@ -853,7 +852,7 @@
       ]
     },
     "total_tests": 1251,
-    "total_seconds": 4.43,
+    "total_seconds": 4.41,
     "regressions": 117,
     "regression_files": [
       "tests/middleware/test_base.py",
@@ -871,19 +870,19 @@
       "blast": {
         "mode": "full",
         "tests": 1251,
-        "seconds": 4.43,
+        "seconds": 4.41,
         "missed": []
       },
       "blast --shallow-init": {
         "mode": "full",
         "tests": 1251,
-        "seconds": 4.43,
+        "seconds": 4.41,
         "missed": []
       },
       "testmon (warm db)": {
         "mode": "selected",
         "tests": 127,
-        "seconds": 0.43,
+        "seconds": 0.41,
         "missed": [
           "tests/test_routing.py"
         ]

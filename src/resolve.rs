@@ -9,6 +9,7 @@ use serde::Serialize;
 use walkdir::WalkDir;
 
 use crate::parser::{self, Import, ParsedFile};
+use crate::pytest_config;
 
 const SKIP_DIRS: &[&str] = &[
     ".git",
@@ -63,6 +64,8 @@ pub struct Project {
     by_name: HashMap<String, Vec<usize>>,
     by_path: HashMap<PathBuf, usize>,
     top_level: BTreeSet<String>,
+    /// pytest `python_files` patterns.
+    pub test_patterns: Vec<String>,
 }
 
 impl Project {
@@ -102,7 +105,9 @@ impl Project {
         }
         modules.sort_by(|a, b| a.path.cmp(&b.path));
 
-        Ok(Self::from_modules(root, modules))
+        let mut project = Self::from_modules(root, modules);
+        project.test_patterns = pytest_config::python_files(&project.root);
+        Ok(project)
     }
 
     pub fn from_modules(root: PathBuf, modules: Vec<Module>) -> Self {
@@ -130,7 +135,24 @@ impl Project {
             by_name,
             by_path,
             top_level,
+            test_patterns: pytest_config::DEFAULT_PYTHON_FILES
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
         }
+    }
+
+    /// Would pytest collect this file? Uses the project's `python_files`.
+    pub fn is_test(&self, path: &Path) -> bool {
+        let Some(name) = path.file_name().and_then(|n| n.to_str()) else {
+            return false;
+        };
+        name != "conftest.py"
+            && name.ends_with(".py")
+            && self
+                .test_patterns
+                .iter()
+                .any(|p| pytest_config::matches(p, name))
     }
 
     pub fn module_by_path(&self, rel: &Path) -> Option<usize> {

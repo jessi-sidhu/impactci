@@ -214,3 +214,24 @@ fn string_refs_link_tests_to_modules() {
         ]
     );
 }
+
+#[test]
+fn respects_pytest_python_files() {
+    let r = TestRepo::new();
+    r.write(
+        "pyproject.toml",
+        "[tool.pytest.ini_options]\npython_files = [\"tests.py\", \"test_*.py\"]\n",
+    )
+    .write("shop/__init__.py", "")
+    .write("shop/models.py", "x = 1\n")
+    .write("shop/tests.py", "from shop.models import x\n")
+    .write("other/__init__.py", "")
+    .write("other/tests.py", "import os\n");
+    let base = r.commit("base");
+    r.write("shop/models.py", "x = 2\n");
+    r.commit("change");
+
+    let sel = run(&r, &base, Options::default());
+    assert_eq!(sel.total_tests, 2);
+    assert_eq!(tests_of(&sel), vec!["shop/tests.py"]);
+}

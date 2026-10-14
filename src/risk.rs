@@ -13,7 +13,6 @@ use serde::Serialize;
 
 use crate::graph::Graph;
 use crate::resolve::Project;
-use crate::select::is_test_file;
 
 /// How far back to look for churn.
 const CHURN_COMMITS: usize = 300;
@@ -65,7 +64,7 @@ pub fn score(
 ) -> Vec<Risk> {
     let mut out: Vec<Risk> = changed
         .iter()
-        .filter(|p| !is_test_file(p))
+        .filter(|p| !project.is_test(p))
         .filter_map(|p| {
             let id = project.module_by_path(p)?;
             let dependents = graph.dependents(&[id]).len() - 1;

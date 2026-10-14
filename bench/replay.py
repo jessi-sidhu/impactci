@@ -398,6 +398,7 @@ def main() -> int:
     p.add_argument("--blast", default=str(Path(__file__).resolve().parent.parent / "target/release/blast"))
     p.add_argument("-n", "--commits", type=int, default=20)
     p.add_argument("--rev", default="HEAD")
+    p.add_argument("--sha", action="append", help="replay just these commits (repeatable)")
     p.add_argument("--testmon", action="store_true")
     p.add_argument("--timeout", type=int, default=900, help="per pytest run, seconds")
     p.add_argument("--name", help="label for the report (default: repo dir name)")
@@ -407,7 +408,10 @@ def main() -> int:
 
     repo = args.repo.resolve()
     name = args.name or repo.name
-    commits = first_parent_commits(repo, args.commits, args.rev)
+    if args.sha:
+        commits = [sh("git", "rev-parse", c, cwd=repo).strip() for c in args.sha]
+    else:
+        commits = first_parent_commits(repo, args.commits, args.rev)
     print(f"replaying {len(commits)} commits of {name}", file=sys.stderr)
 
     tmp = Path(tempfile.mkdtemp(prefix=f"blast-replay-{name}-"))

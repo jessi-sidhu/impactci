@@ -127,6 +127,37 @@ impl Graph {
         out
     }
 
+    /// Shortest import chain from `from` to `to`, both ends included.
+    pub fn path(&self, from: usize, to: usize) -> Option<Vec<usize>> {
+        let mut prev: BTreeMap<usize, usize> = BTreeMap::new();
+        let mut expanded = BTreeSet::from([from]);
+        let mut queue = VecDeque::from([from]);
+        while let Some(m) = queue.pop_front() {
+            if m == to {
+                let mut chain = vec![to];
+                let mut cur = to;
+                while let Some(&p) = prev.get(&cur) {
+                    chain.push(p);
+                    cur = p;
+                }
+                chain.reverse();
+                return Some(chain);
+            }
+            for e in self
+                .graph
+                .edges_directed(self.nodes[m], Direction::Outgoing)
+            {
+                let target = self.graph[e.target()];
+                let can_expand = self.follows(*e.weight()) || target == to;
+                if can_expand && expanded.insert(target) {
+                    prev.insert(target, m);
+                    queue.push_back(target);
+                }
+            }
+        }
+        None
+    }
+
     /// How many modules import this one directly.
     pub fn fan_in(&self, module: usize) -> usize {
         self.graph

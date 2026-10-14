@@ -66,6 +66,18 @@ enum Command {
         #[arg(long)]
         json: bool,
     },
+    /// Show the import chain that links a test (or any module) to another module.
+    Why {
+        /// Test or module path, e.g. tests/test_app.py
+        from: PathBuf,
+        /// Module path it supposedly depends on, e.g. src/pkg/models.py
+        to: PathBuf,
+        /// Project root
+        #[arg(long, default_value = ".")]
+        root: PathBuf,
+        #[arg(long)]
+        shallow_init: bool,
+    },
 }
 
 #[derive(Serialize)]
@@ -81,6 +93,12 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
         Some(Command::Imports { path, all, json }) => imports(path, all, json),
+        Some(Command::Why {
+            from,
+            to,
+            root,
+            shallow_init,
+        }) => why(&root, &from, &to, shallow_init),
         None => {
             let mut args = cli.run;
             if args.json {
@@ -144,6 +162,46 @@ fn print_text(sel: &Selection) {
             println!("  {}", t.display());
         }
     }
+}
+
+fn why(root: &Path, from: &Path, to: &Path, shallow_init: bool) -> Result<()> {
+    let project = Project::load(root)?;
+    let mut graph = Graph::build(&project);
+    graph.shallow_init = shallow_init;
+    let find = |p: &Path| {
+        project
+            .module_by_path(p)
+            .with_context(|| format!("{} isn't a module under {}", p.display(), root.display()))
+    };
+    let (a, b) = (find(from)?, find(to)?);
+
+    // tests also pick up everything their conftest.py files import
+    let mut starts = vec![a];
+    let mut dir = from.parent();
+    while let Some(d) = dir {
+        if let Some(c) = project.module_by_path(&d.join("conftest.py")) {
+            starts.push(c);
+        }
+        dir = d.parent();
+    }
+
+    let best = starts
+        .iter()
+        .filter_map(|&s| graph.path(s, b))
+        .min_by_key(Vec::len);
+    match best {
+        Some(chain) => {
+            if chain[0] != a {
+                println!("{} (via its conftest.py)", from.display());
+            }
+            for (i, m) in chain.iter().enumerate() {
+                let m = &project.modules[*m];
+                println!("{}{} ({})", "  ".repeat(i), m.name, m.path.display());
+            }
+        }
+        None => println!("{} can't reach {}", from.display(), to.display()),
+    }
+    Ok(())
 }
 
 /// Changed files, with paths made relative to the project root (which may be a

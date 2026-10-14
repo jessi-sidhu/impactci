@@ -173,6 +173,7 @@ class Run:
     # nodeid -> (file, seconds, failed)
     tests: dict[str, tuple[str, float, bool]] = field(default_factory=dict)
     wall: float = 0.0
+    returncode: int = 0
 
     def failed(self) -> set[str]:
         return {t for t, (_, _, bad) in self.tests.items() if bad}
@@ -197,12 +198,13 @@ def run_pytest(wt: Path, python: str, extra: list[str], timeout: int) -> Run:
             "-o", "junit_family=xunit1", f"--junitxml={xml}", *extra,
         ]
         start = time.time()
+        code = -1
         try:
-            subprocess.run(cmd, cwd=wt, env=env, capture_output=True, text=True, timeout=timeout)
+            code = subprocess.run(cmd, cwd=wt, env=env, capture_output=True, text=True, timeout=timeout).returncode
         except subprocess.TimeoutExpired:
             pass
         wall = time.time() - start
-        run = Run(wall=wall)
+        run = Run(wall=wall, returncode=code)
         if not xml.exists():
             return run
         for case in ET.parse(xml).getroot().iter("testcase"):
@@ -298,12 +300,20 @@ def replay_commit(args, wt: Path, sha: str) -> Result:
 
     if args.testmon:
         # best case for testmon: a database from a full run of the parent
+        tm_args = ["--testmon", *args.testmon_args, *args.pytest_args]
         checkout(wt, parent)
-        run_pytest(wt, args.python, ["--testmon", *args.pytest_args], args.timeout)
+        warm = run_pytest(wt, args.python, tm_args, args.timeout)
         checkout(wt, sha, keep=(".testmondata", ".testmondata-shm", ".testmondata-wal"))
         mutate_commit(wt, parent, sha)
-        tm = run_pytest(wt, args.python, ["--testmon", *args.pytest_args], args.timeout)
+        tm = run_pytest(wt, args.python, tm_args, args.timeout)
         ran = set(tm.tests)
+        # pytest exit codes 2-4 are interrupted / internal error / usage error: testmon
+        # didn't run, which isn't the same as testmon choosing to run nothing
+        if warm.returncode in (-1, 2, 3, 4) or tm.returncode in (-1, 2, 3, 4):
+            notes.append(f"testmon crashed or timed out (exit {warm.returncode}/{tm.returncode})")
+            variants["testmon (warm db)"] = Variant(mode="error", tests=0, seconds=0, missed=[])
+            tm = None
+    if args.testmon and tm is not None:
         missed_ids = sorted(t for t in regressions if t not in ran)
         missed = sorted({mut.tests[t][0] for t in missed_ids})
         if missed_ids:
@@ -315,6 +325,7 @@ def replay_commit(args, wt: Path, sha: str) -> Result:
             seconds=sum(base.tests[t][1] for t in ran if t in base.tests),
             missed=missed,
         )
+    if args.testmon:
         checkout(wt, sha)
 
     return Result(
@@ -346,13 +357,18 @@ def summarize(name: str, results: list[Result]) -> str:
     lines.append("|---|---|---|---|---|")
     lines.append(f"| full suite | 100% | 100% | {len(results)}/{len(results)} | 0 |")
     for v in variants:
-        ran = sum(r.variants[v].tests for r in results)
-        secs = sum(r.variants[v].seconds for r in results)
-        fulls = sum(1 for r in results if r.variants[v].mode == "full")
-        missed_commits = sum(1 for r in with_mutants if r.variants[v].missed)
+        ok = [r for r in results if r.variants[v].mode != "error"]
+        ran = sum(r.variants[v].tests for r in ok)
+        secs = sum(r.variants[v].seconds for r in ok)
+        fulls = sum(1 for r in ok if r.variants[v].mode == "full")
+        ok_mut = [r for r in ok if r.regressions]
+        missed_commits = sum(1 for r in ok_mut if r.variants[v].missed)
+        errors = len(results) - len(ok)
+        label = f"{v} ({errors} runs errored, left out)" if errors else v
         lines.append(
-            f"| {v} | {pct(ran, total_tests)} | {pct(secs, total_secs)} | {fulls}/{len(results)} "
-            f"| {missed_commits}/{len(with_mutants)} commits |"
+            f"| {label} | {pct(ran, sum(r.total_tests for r in ok))} "
+            f"| {pct(secs, sum(r.total_seconds for r in ok))} | {fulls}/{len(ok)} "
+            f"| {missed_commits}/{len(ok_mut)} commits |"
         )
     lines.append("")
     lines.append("## Per commit")
@@ -367,6 +383,8 @@ def summarize(name: str, results: list[Result]) -> str:
             cell = f"{pct(x.tests, r.total_tests)}"
             if x.mode == "full":
                 cell = "full"
+            if x.mode == "error":
+                cell = "error"
             if x.missed:
                 cell += f" **missed {len(x.missed)}**"
             cells.append(cell)
@@ -393,18 +411,42 @@ def pct(a: float, b: float) -> str:
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--repo", required=True, type=Path)
-    p.add_argument("--python", required=True, help="interpreter with the repo's test deps")
+    p.add_argument("--repo", type=Path)
+    p.add_argument("--python", help="interpreter with the repo's test deps")
     p.add_argument("--blast", default=str(Path(__file__).resolve().parent.parent / "target/release/blast"))
     p.add_argument("-n", "--commits", type=int, default=20)
     p.add_argument("--rev", default="HEAD")
     p.add_argument("--sha", action="append", help="replay just these commits (repeatable)")
     p.add_argument("--testmon", action="store_true")
+    p.add_argument("--testmon-args", type=str, default="", help="extra pytest args for testmon runs only")
+    p.add_argument("--from-json", type=Path, help="just re-render the report from a saved results file")
+    p.add_argument("--note", help="paragraph to add under the title (with --from-json)")
+    p.add_argument("--drop-variant", action="append", default=[], help="leave a variant out of the report")
     p.add_argument("--timeout", type=int, default=900, help="per pytest run, seconds")
     p.add_argument("--name", help="label for the report (default: repo dir name)")
     p.add_argument("--out", type=Path, default=Path(__file__).resolve().parent / "results")
     p.add_argument("pytest_args", nargs="*", help="extra args for pytest (after --)")
     args = p.parse_args()
+    args.testmon_args = args.testmon_args.split()
+
+    if args.from_json:
+        raw = json.loads(args.from_json.read_text())
+        results = []
+        for r in raw:
+            r["variants"] = {
+                k: Variant(**v) for k, v in r["variants"].items() if k not in args.drop_variant
+            }
+            for dropped in args.drop_variant:
+                word = dropped.split()[0]
+                r["notes"] = [n for n in r["notes"] if not n.startswith(word)]
+            results.append(Result(**r))
+        name = args.name or args.from_json.stem
+        report = summarize(name, results)
+        if args.note:
+            report = report.replace("\n\n", f"\n\n{args.note}\n\n", 1)
+        (args.out / f"{name}.md").write_text(report)
+        print(report)
+        return 0
 
     repo = args.repo.resolve()
     name = args.name or repo.name

@@ -63,7 +63,30 @@ const IGNORED_FILES: &[&str] = &[
     ".readthedocs.yml",
     ".pre-commit-config.yaml",
     "CODEOWNERS",
+    "mkdocs.yml",
+    "mkdocs.yaml",
+    "CHANGELOG",
+    "AUTHORS",
 ];
+
+/// `requirements.txt`, `requirements/dev.in`, `requirements-test.txt`, but not
+/// `docs/requirements.rst`.
+fn is_requirements(path: &Path) -> bool {
+    if path.starts_with("docs") {
+        return false;
+    }
+    let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("");
+    let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+    let in_req_dir = path.parent().is_some_and(|d| d.ends_with("requirements"));
+    (name.starts_with("requirements") || in_req_dir) && matches!(ext, "txt" | "in" | "")
+}
+
+fn mentions_tests(yaml: &str) -> bool {
+    let y = yaml.to_ascii_lowercase();
+    ["test", "tox", "nox", "coverage"]
+        .iter()
+        .any(|w| y.contains(w))
+}
 
 /// pytest's default `python_files`: `test_*.py` and `*_test.py`.
 pub fn is_test_file(path: &Path) -> bool {
@@ -200,11 +223,15 @@ fn classify(project: &Project, change: &Change, path: &Path) -> Kind {
     if name == "conftest.py" {
         return Kind::Full(format!("{shown} changed, fixtures can affect any test"));
     }
-    if CONFIG_FILES.contains(&name) || name.starts_with("requirements") {
+    if CONFIG_FILES.contains(&name) || is_requirements(path) {
         return Kind::Full(format!("{shown} is build/test config"));
     }
     if path.starts_with(".github/workflows") {
-        return Kind::Full(format!("{shown} changes how CI runs"));
+        // lint / codeql / release workflows don't change test results
+        return match std::fs::read_to_string(project.root.join(path)) {
+            Ok(yaml) if !mentions_tests(&yaml) => Kind::Ignore,
+            _ => Kind::Full(format!("{shown} changes how CI runs tests")),
+        };
     }
 
     if ext == "py" {
@@ -252,6 +279,25 @@ fn classify(project: &Project, change: &Change, path: &Path) -> Kind {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn requirements_files() {
+        assert!(is_requirements(Path::new("requirements.txt")));
+        assert!(is_requirements(Path::new("requirements-dev.txt")));
+        assert!(is_requirements(Path::new("requirements/tests.in")));
+        assert!(!is_requirements(Path::new("docs/requirements.txt")));
+        assert!(!is_requirements(Path::new("docs/requirements.rst")));
+        assert!(!is_requirements(Path::new("requirements.md")));
+    }
+
+    #[test]
+    fn workflow_sniffing() {
+        assert!(mentions_tests("jobs:\n  tests:\n    run: pytest\n"));
+        assert!(mentions_tests("run: tox -e py312\n"));
+        assert!(!mentions_tests(
+            "name: CodeQL\njobs:\n  analyze:\n    uses: github/codeql-action\n"
+        ));
+    }
 
     #[test]
     fn test_file_patterns() {

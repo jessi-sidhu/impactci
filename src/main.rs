@@ -39,6 +39,10 @@ struct RunArgs {
     /// Don't force tests that reach a non-literal dynamic import
     #[arg(long)]
     trust_dynamic: bool,
+    /// Don't follow a package `__init__.py`'s re-exports when a test only imports a
+    /// submodule. Selects far fewer tests in libraries, but can miss import-time breakage.
+    #[arg(long)]
+    shallow_init: bool,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -89,7 +93,8 @@ fn main() -> Result<()> {
 
 fn run(args: RunArgs) -> Result<()> {
     let project = Project::load(&args.path)?;
-    let graph = Graph::build(&project);
+    let mut graph = Graph::build(&project);
+    graph.shallow_init = args.shallow_init;
     let changed = changes_in_project(&args.path, &args.diff)?;
     let opts = Options {
         trust_dynamic: args.trust_dynamic,

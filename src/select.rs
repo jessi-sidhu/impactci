@@ -115,7 +115,7 @@ pub fn select(project: &Project, graph: &Graph, changes: &[Change], opts: &Optio
     let mut wildcard_hits = BTreeSet::new();
     for &t in &tests {
         let reach = test_closure(project, graph, t);
-        let hits_change = !reach.is_disjoint(&affected);
+        let hits_change = changed_modules.iter().any(|c| reach.contains(c));
         let hit_wildcards: Vec<usize> = reach.intersection(&wildcards).copied().collect();
         // a wildcard can only pull in code that changed, and nothing dynamically imports
         // a test file, so a docs- or tests-only diff doesn't trigger it

@@ -1,19 +1,30 @@
 //! Module dependency graph. Edges point from importer to imported.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use petgraph::Direction;
 use petgraph::graph::{DiGraph, NodeIndex};
-use petgraph::visit::Bfs;
-use petgraph::visit::Reversed;
+use petgraph::visit::EdgeRef;
 
 use crate::resolve::{Project, Resolution};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Edge {
+    /// Actually uses the module.
+    Import,
+    /// Only runs the module because it's a parent package's `__init__.py`.
+    Parent,
+}
+
 pub struct Graph {
-    graph: DiGraph<usize, ()>,
+    graph: DiGraph<usize, Edge>,
     nodes: Vec<NodeIndex>,
     /// Per module: imports that look internal but didn't resolve.
     pub unresolved: Vec<Vec<String>>,
+    /// Don't follow a package `__init__.py`'s own imports when it was only reached as a
+    /// parent. Big win for libraries whose `__init__` re-exports everything, but it can
+    /// miss import-time breakage, so it's opt in.
+    pub shallow_init: bool,
 }
 
 impl Graph {
@@ -25,23 +36,34 @@ impl Graph {
         let mut unresolved = vec![Vec::new(); project.modules.len()];
 
         for (id, m) in project.modules.iter().enumerate() {
-            let mut targets = BTreeSet::new();
+            // Import beats Parent if a module is reached both ways
+            let mut targets: BTreeMap<usize, Edge> = BTreeMap::new();
+            let mut add = |res: Resolution| {
+                if let Resolution::Internal { modules, parents } = res {
+                    for t in modules {
+                        let kind = if parents.contains(&t) {
+                            Edge::Parent
+                        } else {
+                            Edge::Import
+                        };
+                        let e = targets.entry(t).or_insert(kind);
+                        *e = (*e).min(kind);
+                    }
+                }
+            };
             for imp in &m.parsed.imports {
                 match project.resolve(id, imp) {
-                    Resolution::Internal { modules, .. } => targets.extend(modules),
-                    Resolution::External => {}
                     Resolution::Unresolved { reason } => unresolved[id].push(reason),
+                    res => add(res),
                 }
             }
             // strings like "pkg.mod:obj" only count if they hit one of our modules;
             // a string that doesn't resolve is just a string
             for r in &m.parsed.string_refs {
-                if let Resolution::Internal { modules, .. } = project.resolve(id, r) {
-                    targets.extend(modules);
-                }
+                add(project.resolve(id, r));
             }
-            for t in targets {
-                graph.add_edge(nodes[id], nodes[t], ());
+            for (t, kind) in targets {
+                graph.add_edge(nodes[id], nodes[t], kind);
             }
         }
 
@@ -49,28 +71,58 @@ impl Graph {
             graph,
             nodes,
             unresolved,
+            shallow_init: false,
         }
     }
 
-    /// Everything that transitively imports any of `changed`, including `changed` itself.
+    fn follows(&self, kind: Edge) -> bool {
+        kind == Edge::Import || !self.shallow_init
+    }
+
+    /// Everything whose code can end up running something in `changed`, including
+    /// `changed` itself.
     pub fn dependents(&self, changed: &[usize]) -> BTreeSet<usize> {
-        let reversed = Reversed(&self.graph);
+        let changed_set: BTreeSet<usize> = changed.iter().copied().collect();
         let mut out = BTreeSet::new();
-        for &c in changed {
-            let mut bfs = Bfs::new(reversed, self.nodes[c]);
-            while let Some(n) = bfs.next(reversed) {
-                out.insert(self.graph[n]);
+        let mut queue: VecDeque<usize> = changed.iter().copied().collect();
+        out.extend(changed.iter().copied());
+
+        while let Some(m) = queue.pop_front() {
+            for e in self
+                .graph
+                .edges_directed(self.nodes[m], Direction::Incoming)
+            {
+                // reaching a changed module as a parent still runs it; reaching a module
+                // that merely imports the change as a parent doesn't
+                if !changed_set.contains(&m) && !self.follows(*e.weight()) {
+                    continue;
+                }
+                let importer = self.graph[e.source()];
+                if out.insert(importer) {
+                    queue.push_back(importer);
+                }
             }
         }
         out
     }
 
-    /// Everything `module` transitively imports, including itself.
+    /// Everything `module` can end up running, including itself.
     pub fn dependencies(&self, module: usize) -> BTreeSet<usize> {
-        let mut out = BTreeSet::new();
-        let mut bfs = Bfs::new(&self.graph, self.nodes[module]);
-        while let Some(n) = bfs.next(&self.graph) {
-            out.insert(self.graph[n]);
+        let mut out = BTreeSet::from([module]);
+        let mut expanded = BTreeSet::from([module]);
+        let mut queue = VecDeque::from([module]);
+
+        while let Some(m) = queue.pop_front() {
+            for e in self
+                .graph
+                .edges_directed(self.nodes[m], Direction::Outgoing)
+            {
+                let target = self.graph[e.target()];
+                out.insert(target);
+                if self.follows(*e.weight()) && expanded.insert(target) {
+                    queue.push_back(target);
+                }
+            }
         }
         out
     }
@@ -166,6 +218,57 @@ mod tests {
             vec!["pkg.plugins", "conftest"]
         );
         assert!(g.unresolved[2].is_empty());
+    }
+
+    #[test]
+    fn shallow_init_skips_reexports() {
+        // pkg/__init__ re-exports a and b; t only uses pkg.a
+        let p = Project::from_modules(
+            "/repo".into(),
+            vec![
+                Module {
+                    name: "pkg".into(),
+                    path: "pkg/__init__.py".into(),
+                    is_package: true,
+                    parsed: parse_source("from .a import x\nfrom .b import y\n").unwrap(),
+                },
+                Module {
+                    name: "pkg.a".into(),
+                    path: "pkg/a.py".into(),
+                    is_package: false,
+                    parsed: parse_source("").unwrap(),
+                },
+                Module {
+                    name: "pkg.b".into(),
+                    path: "pkg/b.py".into(),
+                    is_package: false,
+                    parsed: parse_source("").unwrap(),
+                },
+                Module {
+                    name: "t".into(),
+                    path: "t.py".into(),
+                    is_package: false,
+                    parsed: parse_source("from pkg.a import x\n").unwrap(),
+                },
+                Module {
+                    name: "u".into(),
+                    path: "u.py".into(),
+                    is_package: false,
+                    parsed: parse_source("import pkg\n").unwrap(),
+                },
+            ],
+        );
+        let mut g = Graph::build(&p);
+        assert_eq!(
+            names(&p, g.dependents(&[2])),
+            vec!["pkg", "pkg.b", "t", "u"]
+        );
+
+        g.shallow_init = true;
+        assert_eq!(names(&p, g.dependents(&[2])), vec!["pkg", "pkg.b", "u"]);
+        assert_eq!(names(&p, g.dependencies(3)), vec!["pkg", "pkg.a", "t"]);
+        // the __init__ itself changing still reaches t
+        assert_eq!(names(&p, g.dependents(&[0])), vec!["pkg", "t", "u"]);
     }
 
     #[test]

@@ -66,6 +66,9 @@ runs:
         else
           echo "no prebuilt binary, building from source"
           echo "build=true" >> "$GITHUB_OUTPUT"
+          # hashFiles() only sees the workspace, and the action lives outside it
+          key=$(cd "$ACTION_PATH" && find Cargo.lock Cargo.toml src -type f | sort | xargs cat | shasum -a 256 | cut -c1-16)
+          echo "key=$key" >> "$GITHUB_OUTPUT"
         fi
         echo "dir=$dest" >> "$GITHUB_OUTPUT"
 
@@ -74,7 +77,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ github.action_path }}/target
-        key: blast-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}/Cargo.lock', github.action_path), format('{0}/src/**', github.action_path)) }}
+        key: blast-${{ runner.os }}-${{ runner.arch }}-${{ steps.bin.outputs.key }}
 
     - name: Build blast
       if: steps.bin.outputs.build == 'true'

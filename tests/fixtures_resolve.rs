@@ -36,15 +36,10 @@ fn flask_src_layout() {
     let p = fixture("flaskish");
     let e = edges(&p);
 
+    // flask.testing is only imported under TYPE_CHECKING
     assert_eq!(
         e["flask.app"],
-        v(&[
-            "flask",
-            "flask.globals",
-            "flask.json",
-            "flask.sansio.app",
-            "flask.testing"
-        ])
+        v(&["flask", "flask.globals", "flask.json", "flask.sansio.app"])
     );
     // sansio/ has no __init__.py but still lives inside flask
     assert_eq!(e["flask.sansio.app"], v(&["flask", "flask.globals"]));

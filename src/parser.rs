@@ -27,6 +27,9 @@ pub struct ParsedFile {
     /// Things like `pytest_plugins`, `import_string("...")` and config paths show up here.
     /// The resolver decides whether they're actually ours.
     pub string_refs: Vec<Import>,
+    /// Imports under `if TYPE_CHECKING:`. They never run, so they don't count as
+    /// dependencies for tests. Kept around for `blast imports`.
+    pub type_only_imports: Vec<Import>,
 }
 
 pub fn parse_source(src: &str) -> Result<ParsedFile> {
@@ -45,6 +48,23 @@ pub fn parse_source(src: &str) -> Result<ParsedFile> {
 
 fn walk(node: Node, src: &[u8], out: &mut ParsedFile) {
     match node.kind() {
+        "if_statement" if is_type_checking(node, src) => {
+            // the body only runs under a type checker; any else branch runs for real
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                if Some(child) == node.child_by_field_name("consequence") {
+                    let mut inner = ParsedFile::default();
+                    walk(child, src, &mut inner);
+                    out.type_only_imports.append(&mut inner.imports);
+                    out.type_only_imports.append(&mut inner.type_only_imports);
+                    out.dynamic_imports.append(&mut inner.dynamic_imports);
+                    out.string_refs.append(&mut inner.string_refs);
+                } else {
+                    walk(child, src, out);
+                }
+            }
+            return;
+        }
         "import_statement" => {
             read_import(node, src, out);
             return;
@@ -142,6 +162,16 @@ fn read_from_import(node: Node, src: &[u8], out: &mut ParsedFile) {
         level,
         line: line_of(node),
     });
+}
+
+/// `if TYPE_CHECKING:` / `if typing.TYPE_CHECKING:` / `if t.TYPE_CHECKING:`
+fn is_type_checking(node: Node, src: &[u8]) -> bool {
+    node.child_by_field_name("condition")
+        .map(|c| {
+            let t = strip_ws(text(c, src));
+            t == "TYPE_CHECKING" || t.ends_with(".TYPE_CHECKING")
+        })
+        .unwrap_or(false)
 }
 
 /// `a.b` or `a.b as c` -> `a.b`
@@ -356,7 +386,32 @@ def f():
         import json
 "#;
         let got: Vec<_> = imports(src).into_iter().map(|i| i.0).collect();
-        assert_eq!(got, s(&["typing", "app", "simplejson", "json"]));
+        assert_eq!(got, s(&["typing", "simplejson", "json"]));
+    }
+
+    #[test]
+    fn type_checking_imports_are_separate() {
+        let src = r#"
+from typing import TYPE_CHECKING
+import typing as t
+
+if TYPE_CHECKING:
+    from .sessions import Session
+else:
+    from .compat import Session
+
+if t.TYPE_CHECKING:
+    import pkg.types
+"#;
+        let parsed = parse_source(src).unwrap();
+        let real: Vec<_> = parsed.imports.iter().map(|i| i.module.as_str()).collect();
+        let typed: Vec<_> = parsed
+            .type_only_imports
+            .iter()
+            .map(|i| i.module.as_str())
+            .collect();
+        assert_eq!(real, vec!["typing", "typing", "compat"]);
+        assert_eq!(typed, vec!["sessions", "pkg.types"]);
     }
 
     #[test]

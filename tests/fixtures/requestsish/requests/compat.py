@@ -10,3 +10,4 @@ for lib in ("chardet", "charset_normalizer"):
         pass
 
 str = str
+backend = importlib.import_module(BACKEND)

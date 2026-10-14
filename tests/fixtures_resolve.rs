@@ -68,5 +68,5 @@ fn requests_flat_layout() {
     );
 
     let compat = p.lookup("requests.compat")[0];
-    assert_eq!(p.modules[compat].parsed.dynamic_imports, vec![7]);
+    assert_eq!(p.modules[compat].parsed.dynamic_imports, vec![13]);
 }

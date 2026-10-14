@@ -53,10 +53,20 @@ fn walk(node: Node, src: &[u8], out: &mut ParsedFile) {
             read_from_import(node, src, out);
             return;
         }
-        "call" if is_dynamic_import(node, src) => match first_string_arg(node, src) {
-            Some(lit) if !lit.starts_with('.') => out.imports.push(literal_import(&lit, node)),
-            _ => out.dynamic_imports.push(line_of(node)),
-        },
+        "call" if is_dynamic_import(node, src) => {
+            let literals = first_string_arg(node, src)
+                .map(|lit| vec![lit])
+                .or_else(|| loop_literals(node, src))
+                .filter(|lits| lits.iter().all(|l| !l.starts_with('.')));
+            match literals {
+                Some(lits) => {
+                    for lit in lits {
+                        out.imports.push(literal_import(&lit, node));
+                    }
+                }
+                None => out.dynamic_imports.push(line_of(node)),
+            }
+        }
         "string" => {
             if let Some(lit) = string_literal(node, src)
                 && looks_like_module_path(&lit)
@@ -170,6 +180,43 @@ fn first_string_arg(call: Node, src: &[u8]) -> Option<String> {
         return None;
     }
     string_literal(first, src)
+}
+
+/// `for lib in ("chardet", "charset_normalizer"): import_module(lib)` -> both names.
+/// Only when the argument is the loop variable and the loop is over string literals.
+fn loop_literals(call: Node, src: &[u8]) -> Option<Vec<String>> {
+    let arg = call.child_by_field_name("arguments")?.named_child(0)?;
+    if arg.kind() != "identifier" {
+        return None;
+    }
+    let var = text(arg, src);
+
+    let mut node = call.parent();
+    while let Some(n) = node {
+        if n.kind() == "for_statement" {
+            let left = n.child_by_field_name("left")?;
+            if left.kind() == "identifier" && text(left, src) == var {
+                let right = n.child_by_field_name("right")?;
+                if !matches!(right.kind(), "tuple" | "list") {
+                    return None;
+                }
+                let mut out = Vec::new();
+                let mut cursor = right.walk();
+                for item in right.named_children(&mut cursor) {
+                    if item.kind() != "string" {
+                        return None;
+                    }
+                    out.push(string_literal(item, src)?);
+                }
+                return Some(out);
+            }
+        }
+        if matches!(n.kind(), "function_definition" | "class_definition") {
+            return None;
+        }
+        node = n.parent();
+    }
+    None
 }
 
 /// Contents of a string node, or None for f-strings and anything with interpolation.
@@ -337,6 +384,24 @@ def f():
                 ("pkg", s(&["mod"]))
             ]
         );
+    }
+
+    #[test]
+    fn loop_over_literals() {
+        let src = r#"
+for lib in ("chardet", "charset_normalizer"):
+    try:
+        chardet = importlib.import_module(lib)
+    except ImportError:
+        pass
+
+for package in names:
+    __import__(package)
+"#;
+        let parsed = parse_source(src).unwrap();
+        let got: Vec<_> = parsed.imports.iter().map(|i| i.module.as_str()).collect();
+        assert_eq!(got, vec!["chardet", "charset_normalizer"]);
+        assert_eq!(parsed.dynamic_imports, vec![9]);
     }
 
     #[test]

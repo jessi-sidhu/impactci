@@ -221,6 +221,27 @@ def run_pytest(wt: Path, python: str, extra: list[str], timeout: int) -> Run:
         return run
 
 
+def pytest_id(nodeid: str) -> str:
+    """Our `file::classname::name` back to something pytest accepts."""
+    file, classname, name = nodeid.split("::", 2)
+    module = file[:-3].replace("/", ".")
+    parts = [file]
+    if classname.startswith(module + "."):
+        parts += classname[len(module) + 1 :].split(".")
+    return "::".join(parts + [name])
+
+
+def fails_alone(wt: Path, python: str, nodeids: list[str], extra: list[str], timeout: int) -> set[str]:
+    """Of these tests, which still fail when run on their own (bug still planted)?
+    Anything that passes alone only failed because an earlier test left state behind."""
+    still = set()
+    for t in nodeids:
+        run = run_pytest(wt, python, [*extra, pytest_id(t)], timeout)
+        if run.failed() or run.returncode not in (0, 5):
+            still.add(t)
+    return still
+
+
 # --- blast -------------------------------------------------------------------
 
 
@@ -260,6 +281,7 @@ def replay_commit(args, wt: Path, sha: str) -> Result:
     notes = []
 
     variants: dict[str, Variant] = {}
+    missed_ids: dict[str, set[str]] = {}
     checkout(wt, sha)
     selections = {
         "blast": blast_select(args.blast, wt, parent, sha, []),
@@ -291,6 +313,7 @@ def replay_commit(args, wt: Path, sha: str) -> Result:
         else:
             chosen = {str(p) for p in sel["selected_tests"]}
         missed = sorted(set(reg_files) - chosen)
+        missed_ids[name] = {t for t in regressions if mut.tests[t][0] not in chosen}
         variants[name] = Variant(
             mode=sel["mode"],
             tests=sum(c for f, c in file_counts.items() if f in chosen),
@@ -314,10 +337,11 @@ def replay_commit(args, wt: Path, sha: str) -> Result:
             variants["testmon (warm db)"] = Variant(mode="error", tests=0, seconds=0, missed=[])
             tm = None
     if args.testmon and tm is not None:
-        missed_ids = sorted(t for t in regressions if t not in ran)
-        missed = sorted({mut.tests[t][0] for t in missed_ids})
-        if missed_ids:
-            notes.append(f"testmon skipped {len(missed_ids)} failing tests, e.g. {missed_ids[0]}")
+        tm_missed = sorted(t for t in regressions if t not in ran)
+        missed_ids["testmon (warm db)"] = set(tm_missed)
+        missed = sorted({mut.tests[t][0] for t in tm_missed})
+        if tm_missed:
+            notes.append(f"testmon skipped {len(tm_missed)} failing tests, e.g. {tm_missed[0]}")
         variants["testmon (warm db)"] = Variant(
             mode="selected",
             tests=len(ran),
@@ -327,6 +351,21 @@ def replay_commit(args, wt: Path, sha: str) -> Result:
         )
     if args.testmon:
         checkout(wt, sha)
+
+    # double-check misses: a test that only fails after other tests broke shared state
+    # (env vars, globals) isn't something a selector could reasonably be blamed for
+    suspects = sorted(set().union(*missed_ids.values())) if missed_ids else []
+    if suspects:
+        mutate_commit(wt, parent, sha)
+        real = fails_alone(wt, args.python, suspects[:50], args.pytest_args, args.timeout)
+        real |= set(suspects[50:])  # too many to check one by one, count them as real
+        checkout(wt, sha)
+        flaky = [t for t in suspects if t not in real]
+        if flaky:
+            notes.append(f"{len(flaky)} missed tests pass on their own (order-dependent), not counted: {flaky[0]}")
+        for name, v in variants.items():
+            ids = missed_ids.get(name, set()) & real
+            v.missed = sorted({mut.tests[t][0] for t in ids})
 
     return Result(
         sha=sha[:10],
@@ -421,6 +460,7 @@ def main() -> int:
     p.add_argument("--testmon-args", type=str, default="", help="extra pytest args for testmon runs only")
     p.add_argument("--from-json", type=Path, help="just re-render the report from a saved results file")
     p.add_argument("--note", help="paragraph to add under the title (with --from-json)")
+    p.add_argument("--merge-into", type=Path, help="replace matching commits in an existing results json")
     p.add_argument("--drop-variant", action="append", default=[], help="leave a variant out of the report")
     p.add_argument("--timeout", type=int, default=900, help="per pytest run, seconds")
     p.add_argument("--name", help="label for the report (default: repo dir name)")
@@ -483,6 +523,17 @@ def main() -> int:
         shutil.rmtree(tmp, ignore_errors=True)
 
     args.out.mkdir(parents=True, exist_ok=True)
+    if args.merge_into:
+        # rerun a few commits and patch them into an earlier full run
+        fresh = {r.sha: r for r in results}
+        merged = []
+        for r in json.loads(args.merge_into.read_text()):
+            if r["sha"] in fresh:
+                merged.append(fresh[r["sha"]])
+            else:
+                r["variants"] = {k: Variant(**v) for k, v in r["variants"].items()}
+                merged.append(Result(**r))
+        results = merged
     (args.out / f"{name}.json").write_text(json.dumps([asdict(r) for r in results], indent=2) + "\n")
     report = summarize(name, results)
     (args.out / f"{name}.md").write_text(report)

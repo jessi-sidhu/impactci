@@ -5,6 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
+use rayon::prelude::*;
 use serde::Serialize;
 use walkdir::WalkDir;
 
@@ -81,6 +82,7 @@ impl Project {
             !(SKIP_DIRS.contains(&name.as_ref()) || name.starts_with('.'))
         });
 
+        let mut files = Vec::new();
         for entry in walker {
             let entry = entry?;
             let path = entry.path();
@@ -88,20 +90,30 @@ impl Project {
                 continue;
             }
             let rel = path.strip_prefix(&root).unwrap_or(path).to_path_buf();
-            let Some(name) = package_name(&root, &rel) else {
-                continue;
-            };
-            let src = match fs::read_to_string(path) {
-                Ok(s) => s,
-                Err(_) => continue, // not utf-8, skip it
-            };
-            let parsed = parser::parse_source(&src)?;
-            modules.push(Module {
-                name,
-                is_package: rel.file_name().is_some_and(|f| f == "__init__.py"),
-                path: rel,
-                parsed,
-            });
+            if let Some(name) = package_name(&root, &rel) {
+                files.push((name, rel));
+            }
+        }
+
+        // parsing is nearly all the time on big repos, so spread it out
+        let parsed: Vec<Result<Option<Module>>> = files
+            .into_par_iter()
+            .map(|(name, rel)| {
+                let Ok(src) = fs::read_to_string(root.join(&rel)) else {
+                    return Ok(None); // not utf-8, skip it
+                };
+                Ok(Some(Module {
+                    name,
+                    is_package: rel.file_name().is_some_and(|f| f == "__init__.py"),
+                    parsed: parser::parse_source(&src)?,
+                    path: rel,
+                }))
+            })
+            .collect();
+        for m in parsed {
+            if let Some(m) = m? {
+                modules.push(m);
+            }
         }
         modules.sort_by(|a, b| a.path.cmp(&b.path));
 

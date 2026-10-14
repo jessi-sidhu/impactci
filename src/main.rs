@@ -8,6 +8,7 @@ use blast::diff::{self, Change};
 use blast::graph::Graph;
 use blast::resolve::{Project, Resolution};
 use blast::select::{self, Mode, Options, Selection};
+use blast::{report, risk};
 
 #[derive(Parser)]
 #[command(
@@ -43,6 +44,9 @@ struct RunArgs {
     /// submodule. Selects far fewer tests in libraries, but can miss import-time breakage.
     #[arg(long)]
     shallow_init: bool,
+    /// Also write the PR comment markdown to this file
+    #[arg(long)]
+    markdown_out: Option<PathBuf>,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -51,6 +55,8 @@ enum Format {
     Json,
     /// One test path per line, for `pytest $(blast --format pytest-args)`
     PytestArgs,
+    /// The PR comment
+    Markdown,
 }
 
 #[derive(Subcommand)]
@@ -113,13 +119,27 @@ fn run(args: RunArgs) -> Result<()> {
     let project = Project::load(&args.path)?;
     let mut graph = Graph::build(&project);
     graph.shallow_init = args.shallow_init;
-    let changed = changes_in_project(&args.path, &args.diff)?;
+    let (changed, prefix) = changes_in_project(&args.path, &args.diff)?;
     let opts = Options {
         trust_dynamic: args.trust_dynamic,
     };
     let sel = select::select(&project, &graph, &changed, &opts);
 
+    let wants_md = args.markdown_out.is_some() || matches!(args.format, Format::Markdown);
+    let md = if wants_md {
+        let churn = risk::churn(&args.path).unwrap_or_default();
+        let paths: Vec<PathBuf> = changed.iter().map(|c| c.path.clone()).collect();
+        let risks = risk::score(&project, &graph, &paths, &churn, &prefix);
+        report::markdown(&sel, &risks)
+    } else {
+        String::new()
+    };
+    if let Some(out) = &args.markdown_out {
+        std::fs::write(out, &md).with_context(|| format!("writing {}", out.display()))?;
+    }
+
     match args.format {
+        Format::Markdown => print!("{md}"),
         Format::Json => println!("{}", serde_json::to_string_pretty(&sel)?),
         Format::PytestArgs => {
             // full run: print nothing, bare `pytest` already runs everything
@@ -206,7 +226,7 @@ fn why(root: &Path, from: &Path, to: &Path, shallow_init: bool) -> Result<()> {
 
 /// Changed files, with paths made relative to the project root (which may be a
 /// subdirectory of the git repo). Files outside the project are dropped.
-fn changes_in_project(project_root: &Path, range: &str) -> Result<Vec<Change>> {
+fn changes_in_project(project_root: &Path, range: &str) -> Result<(Vec<Change>, PathBuf)> {
     let root = project_root
         .canonicalize()
         .with_context(|| format!("can't open {}", project_root.display()))?;
@@ -218,7 +238,7 @@ fn changes_in_project(project_root: &Path, range: &str) -> Result<Vec<Change>> {
     let prefix = root.strip_prefix(&workdir).unwrap_or(Path::new(""));
 
     let rel = |p: &Path| p.strip_prefix(prefix).ok().map(Path::to_path_buf);
-    Ok(diff::changed_files(&root, range)?
+    let changes = diff::changed_files(&root, range)?
         .into_iter()
         .filter_map(|c| {
             let path = rel(&c.path);
@@ -238,7 +258,8 @@ fn changes_in_project(project_root: &Path, range: &str) -> Result<Vec<Change>> {
                 (None, None) => None,
             }
         })
-        .collect())
+        .collect();
+    Ok((changes, prefix.to_path_buf()))
 }
 
 fn imports(path: PathBuf, all: bool, json: bool) -> Result<()> {

@@ -1,0 +1,902 @@
+[
+  {
+    "sha": "9014ca519c",
+    "subject": "Fixed #37418 -- Fixed JSONField/HStoreField crash on deeply nested JSON.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.55,
+    "reason": ""
+  },
+  {
+    "sha": "1a9fba7a6c",
+    "subject": "Fixed #23424 -- Corrected tokenization of verbatim blocks.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.41,
+    "reason": ""
+  },
+  {
+    "sha": "de6559094e",
+    "subject": "Refs #23424 -- Added tests for existing comment and verbatim behavior.",
+    "mode": "selected",
+    "selected": 2,
+    "total": 840,
+    "seconds": 1.43,
+    "reason": ""
+  },
+  {
+    "sha": "31c3e4cf75",
+    "subject": "Refs #37372 -- Simplified NULL handling logic in sql.Query.build_filter(",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.42,
+    "reason": ""
+  },
+  {
+    "sha": "f1d11117c6",
+    "subject": "Fixed #28219 -- Made UnorderedObjectListWarning skip Django frames.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.29,
+    "reason": ""
+  },
+  {
+    "sha": "6669d66a79",
+    "subject": "Skipped 1-element geometry collection tests on all Oracle versions.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.28,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "cf63ff2186",
+    "subject": "Fixed #37411 -- Added compatibility for oracledb 26.0.0+.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.3,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "677fbf05da",
+    "subject": "Refs #37271 -- Updated docs/conf.py for calendar versioning.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.31,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "0264b4fc36",
+    "subject": "Fixed #37387 -- Made admindocs model index table full width.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.3,
+    "reason": "django/contrib/admin/static/admin/css/base.css isn't Python, tests might read it"
+  },
+  {
+    "sha": "a272e554b8",
+    "subject": "Fixed GeoQuerySetTest.test_unionagg_tolerance() to accept either merged ",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.41,
+    "reason": ""
+  },
+  {
+    "sha": "bef1986b9a",
+    "subject": "Fixed #37118 -- Added variable support to the {% now %} template tag.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.28,
+    "reason": ""
+  },
+  {
+    "sha": "137b77706e",
+    "subject": "Refs CVE-2026-15830 -- Increased coverage for WKT depth check in GEOS li",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.23,
+    "reason": ""
+  },
+  {
+    "sha": "93d7e82b6a",
+    "subject": "Fixed #37382, Refs #29303 -- Made @non_atomic_requests recognize async v",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.15,
+    "reason": ""
+  },
+  {
+    "sha": "ce285ce0e7",
+    "subject": "Added a 24 hour grace period for automated PR quality checks.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.24,
+    "reason": ".github/workflows/check_pr_quality.yml changes how CI runs tests"
+  },
+  {
+    "sha": "1267767ccd",
+    "subject": "Fixed passing of pagination data as params to github_request().",
+    "mode": "selected",
+    "selected": 836,
+    "total": 840,
+    "seconds": 1.29,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "1b4d021b65",
+    "subject": "Fixed #37403 -- Fixed JSONField __in crash on SQLite with Value(None) ex",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.29,
+    "reason": ""
+  },
+  {
+    "sha": "7f48e266a8",
+    "subject": "Refs #37297 -- Prevented crash on JSONField __isnull lookups on Oracle w",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.28,
+    "reason": ""
+  },
+  {
+    "sha": "66c40aafa2",
+    "subject": "Fixed #37297 -- Prevented crash on JSONField key lookups when an integer",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.34,
+    "reason": ""
+  },
+  {
+    "sha": "135d7c606f",
+    "subject": "Allowed full stops inside quotes in commit messages.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.34,
+    "reason": ".github/workflows/check_commit_messages.yml changes how CI runs tests"
+  },
+  {
+    "sha": "a269574f1b",
+    "subject": "Fixed #37405 -- Fixed crash if sort_keys option is used with YAML serial",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.32,
+    "reason": ""
+  },
+  {
+    "sha": "62ef9d40cf",
+    "subject": "Refs CVE-2026-15830 -- Fixed WKB geometry collection limit bypasses.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.2,
+    "reason": "tests/gis_tests/data/geometries.json isn't Python, tests might read it"
+  },
+  {
+    "sha": "83cbd21be5",
+    "subject": "Fixed CVE-2026-87975 -- Prevented forging actions in model formsets with",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.24,
+    "reason": ""
+  },
+  {
+    "sha": "ebcb13b327",
+    "subject": "Fixed CVE-2026-87890 -- Blocked bytes in spatial lookups.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.3,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "7ff7fcc050",
+    "subject": "Fixed CVE-2026-84429 -- Simplified parse_header_parameters by leveraging",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.58,
+    "reason": ""
+  },
+  {
+    "sha": "c88b304cc2",
+    "subject": "Fixed CVE-2026-77050 -- Prevented memory exhaustion in get_supported_lan",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.66,
+    "reason": ""
+  },
+  {
+    "sha": "08e4c0d8e7",
+    "subject": "Fixed #37322 -- Avoided transforms on spatial fields with srid=None.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.4,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "fabce94374",
+    "subject": "Fixed #37377 -- Fixed JSONField __in crash/wrong result for Value() prim",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.35,
+    "reason": ""
+  },
+  {
+    "sha": "8abacfc36d",
+    "subject": "Refs #37386 -- Tailored error messages for the delete_confirmation_max_d",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.35,
+    "reason": "django/contrib/admin/templates/admin/delete_confirmation.html isn't Python, tests might read it"
+  },
+  {
+    "sha": "7d94ee295d",
+    "subject": "Fixed #37386 -- Observed delete_confirmation_max_display=0 for inlines.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.36,
+    "reason": "django/contrib/admin/templates/admin/delete_confirmation.html isn't Python, tests might read it"
+  },
+  {
+    "sha": "a461af8ce4",
+    "subject": "Fixed decimal comparison in RelatedGeoModelTest.test_related_union_aggre",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.41,
+    "reason": ""
+  },
+  {
+    "sha": "7847227a3f",
+    "subject": "Fixed #37361 -- Fixed permission renames for chained RenameModel operati",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.57,
+    "reason": "tests/auth_tests/operations_migrations/0003_rename_newmodel_to_anothermodel.py isn't an importable module, might be run by tests"
+  },
+  {
+    "sha": "3db0898eee",
+    "subject": "Fixed #37376 -- Made UUID4() persist data in lowercase on Oracle.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.41,
+    "reason": ""
+  },
+  {
+    "sha": "80ea222c8a",
+    "subject": "Fixed #37167 -- Allowed email.headerregistry.Address objects as email ad",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.55,
+    "reason": ""
+  },
+  {
+    "sha": "91585625a9",
+    "subject": "Fixed #37212 -- Improved djangodocs Sphinx extension portability.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.42,
+    "reason": "biome.json isn't Python, tests might read it"
+  },
+  {
+    "sha": "50eef95591",
+    "subject": "Fixed #37291 -- Prevented tuple lookups from hanging on F() expressions.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.39,
+    "reason": ""
+  },
+  {
+    "sha": "479ba6d281",
+    "subject": "Fixed #37378 -- Removed extra empty breadcrumb in admindocs model index.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.41,
+    "reason": "django/contrib/admindocs/templates/admin_doc/model_index.html isn't Python, tests might read it"
+  },
+  {
+    "sha": "2f7f30c320",
+    "subject": "Fixed #36496 -- Ensured the parent path to a sqlite file exists.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.39,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "9332b163a6",
+    "subject": "Refs #37136 -- Fixed test skips for Oracle Test Pilot.",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.36,
+    "reason": ""
+  },
+  {
+    "sha": "dffadf6dfc",
+    "subject": "Fixed #37350 -- Made distinct(*fields) resolve aliases containing \"__\".",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.3,
+    "reason": ""
+  },
+  {
+    "sha": "9e06baf2e4",
+    "subject": "Fixed #37066 -- Wrapped async iteration sites in (maybe_)aclosing.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.35,
+    "reason": ""
+  },
+  {
+    "sha": "a013c821ea",
+    "subject": "Fixed #37177 -- Reduced per-middleware context switching under ASGI.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.38,
+    "reason": ""
+  },
+  {
+    "sha": "703283b5b4",
+    "subject": "Fixed #37358 -- Dropped support for GDAL 3.3 and 3.4.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.39,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "446d9cf602",
+    "subject": "Fixed #37114 -- Dropped support for PostgreSQL 15 and PostGIS 3.2.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.38,
+    "reason": ".github/workflows/check-migrations.yml changes how CI runs tests"
+  },
+  {
+    "sha": "82f34e2f72",
+    "subject": "Refs #36947 -- Added supports_comments skip to test_alter_generated_fiel",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.51,
+    "reason": ""
+  },
+  {
+    "sha": "935edaa91b",
+    "subject": "Fixed #37357 -- Handled out-of-range year in admin date_hierarchy.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.46,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "a3f0642f69",
+    "subject": "Refs #36947 -- Added missing max_length in GeneratedField test for Oracl",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.48,
+    "reason": ""
+  },
+  {
+    "sha": "581deb9402",
+    "subject": "Fixed #37339 -- Allowed ipaddress objects in GenericIPAddressField.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.57,
+    "reason": ""
+  },
+  {
+    "sha": "6ade625848",
+    "subject": "Fixed #37344 -- Enabled FETCH_PEERS batching for instances loaded by sel",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.53,
+    "reason": ""
+  },
+  {
+    "sha": "08ba4d0e0f",
+    "subject": "Modeled a safer mechanism for installing a git hook for backports.",
+    "mode": "selected",
+    "selected": 836,
+    "total": 840,
+    "seconds": 1.5,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "2abf9d2cf8",
+    "subject": "Refs #37348 -- Added test for excluding on a nullable GeneratedField.",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.46,
+    "reason": ""
+  },
+  {
+    "sha": "fb32a564cc",
+    "subject": "Fixed #37348 -- Reverted \"Fixed #36806 -- Added system check for null kw",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.47,
+    "reason": ""
+  },
+  {
+    "sha": "e7f464ecdc",
+    "subject": "Refs #37348 -- Reverted \"Refs #36806 -- Removed unnecessary null=True fr",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.39,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "8cbdd4a814",
+    "subject": "Fixed #37286 -- Preserved unique constraints when removing db_index.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.41,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "64edef37e7",
+    "subject": "Fixed #36947 -- Avoided altering column type when only db_comment change",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.4,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "9cb2cba6fc",
+    "subject": "Fixed typo in django/db/backends/mysql/schema.py.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.4,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "97c38590a2",
+    "subject": "Fixed false positive in func_supports_parameter() for non-keyword args.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.44,
+    "reason": ""
+  },
+  {
+    "sha": "abb9c04bd6",
+    "subject": "Fixed #36629 -- Added missing \"Choose all\" and \"Remove all\" buttons in a",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.51,
+    "reason": "django/contrib/admin/static/admin/css/responsive.css isn't Python, tests might read it"
+  },
+  {
+    "sha": "850e026cbf",
+    "subject": "Fixed #36809 -- Allowed customizing EmailValidator per-part validation.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.48,
+    "reason": ""
+  },
+  {
+    "sha": "fc4eaaabf4",
+    "subject": "Fixed #37289 -- Avoided deleting network rasters.",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.45,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "e7d301b06a",
+    "subject": "Fixed Playwright test flakiness in admin collapse filter tests.",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.54,
+    "reason": ""
+  },
+  {
+    "sha": "be6a149de8",
+    "subject": "Fixed #37145 -- Made ModelFormSet respect custom Form.add_prefix().",
+    "mode": "selected",
+    "selected": 835,
+    "total": 840,
+    "seconds": 1.52,
+    "reason": ""
+  },
+  {
+    "sha": "5f0293b3ab",
+    "subject": "Fixed #37136 -- Added test skips for Oracle Test Pilot.",
+    "mode": "selected",
+    "selected": 1,
+    "total": 840,
+    "seconds": 1.49,
+    "reason": ""
+  },
+  {
+    "sha": "fee1cf7262",
+    "subject": "Refs #37127 -- Added a version-aware sourcefile Sphinx role.",
+    "mode": "full",
+    "selected": 840,
+    "total": 840,
+    "seconds": 1.46,
+    "reason": "tests/sphinx/__init__.py was removed and isn't inside a package, can't tell what used it"
+  },
+  {
+    "sha": "b3f4d83aad",
+    "subject": "Fixed #37013 -- Deprecated Trunc/Extract in migrations with USE_TZ=True ",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.49,
+    "reason": ""
+  },
+  {
+    "sha": "0398417c50",
+    "subject": "Fixed #36523 -- Added django.utils.module_loading.qualname() helper.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.45,
+    "reason": ""
+  },
+  {
+    "sha": "cc933385e7",
+    "subject": "Fixed #37271 -- Added calendar version support to django.utils.version.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.46,
+    "reason": ""
+  },
+  {
+    "sha": "aca5b3f694",
+    "subject": "Refs #37178 -- Deferred django.middleware import in django.utils.depreca",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.44,
+    "reason": ""
+  },
+  {
+    "sha": "026b005f3d",
+    "subject": "Refs #37293 -- Updated deprecation docs for calendar-based warning names",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.42,
+    "reason": ""
+  },
+  {
+    "sha": "52abe52bec",
+    "subject": "Fixed #37293 -- Renamed RemovedInDjango71Warning to RemovedInDjango2029W",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.42,
+    "reason": ""
+  },
+  {
+    "sha": "0d0e7f1503",
+    "subject": "Refs #37293 -- Aliased RemovedInDjango70Warning to RemovedInDjango2028Wa",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.45,
+    "reason": ""
+  },
+  {
+    "sha": "00dca6f097",
+    "subject": "Fixed #37222 -- Fixed QuerySet.distinct() crash on duplicated selections",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.45,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "f14e293cd7",
+    "subject": "Fixed #37312, Refs #36605 -- Fixed annotation preservation and key selec",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.5,
+    "reason": ""
+  },
+  {
+    "sha": "0751d5fed1",
+    "subject": "Fixed #37311 -- Prevented consumption of rhs iterators in annotation loo",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.44,
+    "reason": ""
+  },
+  {
+    "sha": "6126f5d2fe",
+    "subject": "Refs #37309 -- Used _is_pk_set() in the XML serializer.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.34,
+    "reason": ""
+  },
+  {
+    "sha": "8d1c673466",
+    "subject": "Fixed #37309 -- Used _is_pk_set() in Model.__eq__.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.31,
+    "reason": ""
+  },
+  {
+    "sha": "5babd2e21a",
+    "subject": "Fixed #37237 -- Improved RelatedIn lookup preparation performance.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.45,
+    "reason": ""
+  },
+  {
+    "sha": "60a17fccf4",
+    "subject": "Fixed #37300 -- Preserved parent instance hints on custom Prefetch query",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.51,
+    "reason": ""
+  },
+  {
+    "sha": "fe81969e83",
+    "subject": "Fixed #37263 -- Fixed changelist __exact search crashes and over-matchin",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.44,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "73cc09f14f",
+    "subject": "Fixed #36945 -- Made .values() and .order_by() resolve FilteredRelation ",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.49,
+    "reason": ""
+  },
+  {
+    "sha": "439b936753",
+    "subject": "Added test skip for 1-element GeometryCollections on Oracle 23.9.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.45,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "fdfbb711e3",
+    "subject": "Fixed #37296 -- Included the invalid view type in path()/re_path() error",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.45,
+    "reason": ""
+  },
+  {
+    "sha": "7576781cc6",
+    "subject": "Fixed #37255 -- Avoided relying on implicit SELECT ordering in tests.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.42,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "cccc004b46",
+    "subject": "Skipped tests involving 1-element GeometryCollections on Oracle 23.9.",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.33,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "1d50f12929",
+    "subject": "Fixed #37258, Refs #36644 -- Documented error when default ordering fiel",
+    "mode": "selected",
+    "selected": 1,
+    "total": 838,
+    "seconds": 1.39,
+    "reason": ""
+  },
+  {
+    "sha": "d992705f9e",
+    "subject": "Fixed #37259 -- Restored support for old-signature Model.from_db() overr",
+    "mode": "selected",
+    "selected": 833,
+    "total": 838,
+    "seconds": 1.4,
+    "reason": ""
+  },
+  {
+    "sha": "504d1f12cd",
+    "subject": "Refs #37260 -- Added missing skip condition to test_fk_alter_on_delete_d",
+    "mode": "selected",
+    "selected": 1,
+    "total": 838,
+    "seconds": 1.42,
+    "reason": ""
+  },
+  {
+    "sha": "464a5e1844",
+    "subject": "Fixed #37154, #37149 -- Switched from Selenium to Playwright for integra",
+    "mode": "full",
+    "selected": 838,
+    "total": 838,
+    "seconds": 1.36,
+    "reason": ".github/workflows/playwright.yml changes how CI runs tests"
+  },
+  {
+    "sha": "be6cf83229",
+    "subject": "Fixed #37274 -- Allowed transforms in order_by() after alias().",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.34,
+    "reason": ""
+  },
+  {
+    "sha": "c72f5fb479",
+    "subject": "Fixed #37279 -- Rejected null characters in URLValidator.",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.35,
+    "reason": ""
+  },
+  {
+    "sha": "f7610bda78",
+    "subject": "Fixed #37250 -- Allowed nesting GEOS GeometryCollection objects.",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.34,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "a3e6e7d3aa",
+    "subject": "Fixed #37275, Refs #24920 -- Fixed SQLite DecimalField conversion withou",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.36,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "1a001208b0",
+    "subject": "Fixed #37278 -- Made QuerySet.totally_ordered understand aliases to pure",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.32,
+    "reason": ""
+  },
+  {
+    "sha": "07d4f69c94",
+    "subject": "Fixed #37260 -- Made alterations between Python on_delete options noops.",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.35,
+    "reason": ""
+  },
+  {
+    "sha": "4ee04972e7",
+    "subject": "Refs CVE-2026-15307 -- Used a more common lookup in raster lookup tests.",
+    "mode": "selected",
+    "selected": 1,
+    "total": 839,
+    "seconds": 1.34,
+    "reason": ""
+  },
+  {
+    "sha": "febefb175e",
+    "subject": "Fixed #37248 -- Skipped unique validation of a dynamic DatabaseDefault e",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.35,
+    "reason": ""
+  },
+  {
+    "sha": "812c08bd4e",
+    "subject": "Fixed #37273 -- Allowed F() expressions on the RHS of CompositePK lookup",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.32,
+    "reason": ""
+  },
+  {
+    "sha": "99d56e5cf1",
+    "subject": "Fixed #37262 -- Restored rendering of html-safe strings in form media.",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.41,
+    "reason": ""
+  },
+  {
+    "sha": "c6be0bf3bb",
+    "subject": "Fixed #37254 -- Added fields.E323 for models referenced by ManyToManyFie",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.33,
+    "reason": ""
+  },
+  {
+    "sha": "082b3df406",
+    "subject": "Fixed #37270 -- Fixed incorrect values for second-degree relations in Mo",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.31,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  },
+  {
+    "sha": "6df8fe3bc1",
+    "subject": "Fixed #24580 -- Tested FK values with __html__() in ModelAdmin.list_disp",
+    "mode": "selected",
+    "selected": 834,
+    "total": 839,
+    "seconds": 1.35,
+    "reason": "django/apps/config.py:111 has a dynamic import, running tests that reach it"
+  }
+]

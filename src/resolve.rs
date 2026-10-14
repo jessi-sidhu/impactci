@@ -5,10 +5,12 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
+use rayon::prelude::*;
 use serde::Serialize;
 use walkdir::WalkDir;
 
 use crate::parser::{self, Import, ParsedFile};
+use crate::pytest_config;
 
 const SKIP_DIRS: &[&str] = &[
     ".git",
@@ -63,6 +65,8 @@ pub struct Project {
     by_name: HashMap<String, Vec<usize>>,
     by_path: HashMap<PathBuf, usize>,
     top_level: BTreeSet<String>,
+    /// pytest `python_files` patterns.
+    pub test_patterns: Vec<String>,
 }
 
 impl Project {
@@ -78,6 +82,7 @@ impl Project {
             !(SKIP_DIRS.contains(&name.as_ref()) || name.starts_with('.'))
         });
 
+        let mut files = Vec::new();
         for entry in walker {
             let entry = entry?;
             let path = entry.path();
@@ -85,24 +90,36 @@ impl Project {
                 continue;
             }
             let rel = path.strip_prefix(&root).unwrap_or(path).to_path_buf();
-            let Some(name) = package_name(&root, &rel) else {
-                continue;
-            };
-            let src = match fs::read_to_string(path) {
-                Ok(s) => s,
-                Err(_) => continue, // not utf-8, skip it
-            };
-            let parsed = parser::parse_source(&src)?;
-            modules.push(Module {
-                name,
-                is_package: rel.file_name().is_some_and(|f| f == "__init__.py"),
-                path: rel,
-                parsed,
-            });
+            if let Some(name) = package_name(&root, &rel) {
+                files.push((name, rel));
+            }
+        }
+
+        // parsing is nearly all the time on big repos, so spread it out
+        let parsed: Vec<Result<Option<Module>>> = files
+            .into_par_iter()
+            .map(|(name, rel)| {
+                let Ok(src) = fs::read_to_string(root.join(&rel)) else {
+                    return Ok(None); // not utf-8, skip it
+                };
+                Ok(Some(Module {
+                    name,
+                    is_package: rel.file_name().is_some_and(|f| f == "__init__.py"),
+                    parsed: parser::parse_source(&src)?,
+                    path: rel,
+                }))
+            })
+            .collect();
+        for m in parsed {
+            if let Some(m) = m? {
+                modules.push(m);
+            }
         }
         modules.sort_by(|a, b| a.path.cmp(&b.path));
 
-        Ok(Self::from_modules(root, modules))
+        let mut project = Self::from_modules(root, modules);
+        project.test_patterns = pytest_config::python_files(&project.root);
+        Ok(project)
     }
 
     pub fn from_modules(root: PathBuf, modules: Vec<Module>) -> Self {
@@ -130,7 +147,24 @@ impl Project {
             by_name,
             by_path,
             top_level,
+            test_patterns: pytest_config::DEFAULT_PYTHON_FILES
+                .iter()
+                .map(|s| s.to_string())
+                .collect(),
         }
+    }
+
+    /// Would pytest collect this file? Uses the project's `python_files`.
+    pub fn is_test(&self, path: &Path) -> bool {
+        let Some(name) = path.file_name().and_then(|n| n.to_str()) else {
+            return false;
+        };
+        name != "conftest.py"
+            && name.ends_with(".py")
+            && self
+                .test_patterns
+                .iter()
+                .any(|p| pytest_config::matches(p, name))
     }
 
     pub fn module_by_path(&self, rel: &Path) -> Option<usize> {

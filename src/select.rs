@@ -88,14 +88,6 @@ fn mentions_tests(yaml: &str) -> bool {
         .any(|w| y.contains(w))
 }
 
-/// pytest's default `python_files`: `test_*.py` and `*_test.py`.
-pub fn is_test_file(path: &Path) -> bool {
-    let Some(name) = path.file_name().and_then(|n| n.to_str()) else {
-        return false;
-    };
-    name.ends_with(".py") && (name.starts_with("test_") || name.ends_with("_test.py"))
-}
-
 pub fn select(project: &Project, graph: &Graph, changes: &[Change], opts: &Options) -> Selection {
     let mut reasons = Vec::new();
     let mut force_full = false;
@@ -117,7 +109,7 @@ pub fn select(project: &Project, graph: &Graph, changes: &[Change], opts: &Optio
     let affected = graph.dependents(&changed_modules);
     let library_changed = changed_modules
         .iter()
-        .any(|&id| !is_test_file(&project.modules[id].path));
+        .any(|&id| !project.is_test(&project.modules[id].path));
 
     // modules that could import anything: test reaching them is always in
     let mut wildcards = BTreeSet::new();
@@ -131,7 +123,7 @@ pub fn select(project: &Project, graph: &Graph, changes: &[Change], opts: &Optio
     }
 
     let tests: Vec<usize> = (0..project.modules.len())
-        .filter(|&id| is_test_file(&project.modules[id].path))
+        .filter(|&id| project.is_test(&project.modules[id].path))
         .collect();
 
     let mut selected = Vec::new();
@@ -301,10 +293,11 @@ mod tests {
 
     #[test]
     fn test_file_patterns() {
-        assert!(is_test_file(Path::new("tests/test_app.py")));
-        assert!(is_test_file(Path::new("pkg/app_test.py")));
-        assert!(!is_test_file(Path::new("tests/conftest.py")));
-        assert!(!is_test_file(Path::new("tests/helpers.py")));
-        assert!(!is_test_file(Path::new("tests/test_data.json")));
+        let p = Project::from_modules("/repo".into(), vec![]);
+        assert!(p.is_test(Path::new("tests/test_app.py")));
+        assert!(p.is_test(Path::new("pkg/app_test.py")));
+        assert!(!p.is_test(Path::new("tests/conftest.py")));
+        assert!(!p.is_test(Path::new("tests/helpers.py")));
+        assert!(!p.is_test(Path::new("tests/test_data.json")));
     }
 }

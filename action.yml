@@ -1,0 +1,180 @@
+name: blast
+description: Run only the Python tests a PR can reach, and comment the blast radius.
+branding:
+  icon: target
+  color: orange
+
+inputs:
+  run:
+    description: >
+      Test command, e.g. `pytest` or `python -m pytest -x`. Selected test files are
+      appended to it. Leave empty to only compute outputs and comment.
+    default: ""
+  path:
+    description: Project root, relative to the repo.
+    default: "."
+  base:
+    description: Base revision to diff against. Defaults to the PR base, or the previous push.
+    default: ""
+  comment:
+    description: Post (and keep updating) a PR comment with the blast radius.
+    default: "true"
+  args:
+    description: Extra flags for blast, e.g. `--shallow-init`.
+    default: ""
+  token:
+    description: Token used for the PR comment.
+    default: ${{ github.token }}
+
+outputs:
+  mode:
+    description: "`selected` or `full`"
+    value: ${{ steps.select.outputs.mode }}
+  tests:
+    description: Space separated test files (empty for a full run)
+    value: ${{ steps.select.outputs.tests }}
+  count:
+    description: Number of selected test files
+    value: ${{ steps.select.outputs.count }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get blast
+      id: bin
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        ACTION_REPO: ${{ github.action_repository }}
+        ACTION_REF: ${{ github.action_ref }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        case "${RUNNER_OS}-${RUNNER_ARCH}" in
+          Linux-X64) target=x86_64-unknown-linux-gnu ;;
+          Linux-ARM64) target=aarch64-unknown-linux-gnu ;;
+          macOS-ARM64) target=aarch64-apple-darwin ;;
+          *) target="" ;;
+        esac
+        dest="${RUNNER_TEMP}/blast-bin"
+        mkdir -p "$dest"
+        if [ -n "$target" ] && [ -n "${ACTION_REPO}" ] && [ -n "${ACTION_REF}" ] \
+          && gh release download "${ACTION_REF}" -R "${ACTION_REPO}" -p "blast-${target}.tar.gz" -D "$dest" 2>/dev/null; then
+          tar -xzf "$dest/blast-${target}.tar.gz" -C "$dest"
+          echo "using prebuilt blast ${ACTION_REF} (${target})"
+          echo "build=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "no prebuilt binary, building from source"
+          echo "build=true" >> "$GITHUB_OUTPUT"
+        fi
+        echo "dir=$dest" >> "$GITHUB_OUTPUT"
+
+    - name: Cache blast build
+      if: steps.bin.outputs.build == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.action_path }}/target
+        key: blast-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}/Cargo.lock', github.action_path), format('{0}/src/**', github.action_path)) }}
+
+    - name: Build blast
+      if: steps.bin.outputs.build == 'true'
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: |
+        cargo build --release --locked --quiet
+        cp target/release/blast "${{ steps.bin.outputs.dir }}/"
+
+    - name: Select tests
+      id: select
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        BLAST: ${{ steps.bin.outputs.dir }}/blast
+        INPUT_BASE: ${{ inputs.base }}
+        PR_BASE: ${{ github.event.pull_request.base.sha }}
+        PUSH_BEFORE: ${{ github.event.before }}
+        EXTRA_ARGS: ${{ inputs.args }}
+      run: |
+        set -uo pipefail
+        out="${RUNNER_TEMP}/blast"
+        mkdir -p "$out"
+
+        full() {
+          echo "::warning::blast: $1, running the full suite"
+          echo "mode=full" >> "$GITHUB_OUTPUT"
+          echo "tests=" >> "$GITHUB_OUTPUT"
+          echo "count=0" >> "$GITHUB_OUTPUT"
+          exit 0
+        }
+
+        base="${INPUT_BASE:-${PR_BASE:-${PUSH_BEFORE:-}}}"
+        if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+          full "no base revision to diff against"
+        fi
+
+        # we need enough history to find the merge base
+        if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
+          git fetch --quiet --no-tags --unshallow origin || true
+        fi
+        git cat-file -e "${base}^{commit}" 2>/dev/null || git fetch --quiet --no-tags origin "$base" || full "can't fetch $base"
+
+        # shellcheck disable=SC2086
+        if ! "$BLAST" --diff "${base}..HEAD" --format json --markdown-out "$out/comment.md" $EXTRA_ARGS . > "$out/selection.json"; then
+          full "blast failed"
+        fi
+
+        mode=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["mode"])' "$out/selection.json")
+        tests=$(python3 -c 'import json,sys; print(" ".join(json.load(open(sys.argv[1]))["selected_tests"]))' "$out/selection.json")
+        count=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["selected_tests"]))' "$out/selection.json")
+        [ "$mode" = "full" ] && tests=""
+
+        echo "mode=$mode" >> "$GITHUB_OUTPUT"
+        echo "tests=$tests" >> "$GITHUB_OUTPUT"
+        echo "count=$count" >> "$GITHUB_OUTPUT"
+        echo "comment=$out/comment.md" >> "$GITHUB_OUTPUT"
+        cat "$out/comment.md" >> "$GITHUB_STEP_SUMMARY"
+        echo "blast: mode=$mode, $count test files"
+
+    - name: Comment on PR
+      if: inputs.comment == 'true' && github.event.pull_request.number && steps.select.outputs.comment
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        PR: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+        BODY_FILE: ${{ steps.select.outputs.comment }}
+      run: |
+        set -uo pipefail
+        existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+          --jq '.[] | select(.body | startswith("<!-- blast-report -->")) | .id' 2>/dev/null | head -n1)
+        body=$(python3 -c 'import json,sys; print(json.dumps({"body": open(sys.argv[1]).read()}))' "$BODY_FILE")
+        if [ -n "$existing" ]; then
+          echo "$body" | gh api -X PATCH "repos/$REPO/issues/comments/$existing" --input - > /dev/null \
+            || echo "::warning::blast: couldn't update the PR comment (needs pull-requests: write)"
+        else
+          echo "$body" | gh api -X POST "repos/$REPO/issues/$PR/comments" --input - > /dev/null \
+            || echo "::warning::blast: couldn't post a PR comment (needs pull-requests: write)"
+        fi
+
+    - name: Run tests
+      if: inputs.run != ''
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        MODE: ${{ steps.select.outputs.mode }}
+        TESTS: ${{ steps.select.outputs.tests }}
+        RUN: ${{ inputs.run }}
+      run: |
+        set -eo pipefail
+        if [ "$MODE" = "selected" ] && [ -z "$TESTS" ]; then
+          echo "blast: no tests affected by this change, skipping"
+          exit 0
+        fi
+        if [ "$MODE" = "selected" ]; then
+          echo "+ $RUN $TESTS"
+          # shellcheck disable=SC2086
+          eval "$RUN" $TESTS
+        else
+          echo "+ $RUN"
+          eval "$RUN"
+        fi

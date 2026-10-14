@@ -28,7 +28,7 @@ impl Graph {
             let mut targets = BTreeSet::new();
             for imp in &m.parsed.imports {
                 match project.resolve(id, imp) {
-                    Resolution::Internal { modules } => targets.extend(modules),
+                    Resolution::Internal { modules, .. } => targets.extend(modules),
                     Resolution::External => {}
                     Resolution::Unresolved { reason } => unresolved[id].push(reason),
                 }
@@ -36,7 +36,7 @@ impl Graph {
             // strings like "pkg.mod:obj" only count if they hit one of our modules;
             // a string that doesn't resolve is just a string
             for r in &m.parsed.string_refs {
-                if let Resolution::Internal { modules } = project.resolve(id, r) {
+                if let Resolution::Internal { modules, .. } = project.resolve(id, r) {
                     targets.extend(modules);
                 }
             }

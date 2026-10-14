@@ -42,7 +42,12 @@ pub struct Module {
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Resolution {
     /// Points at one or more modules in this repo (the target plus parent packages).
-    Internal { modules: Vec<usize> },
+    /// `parents` is the subset that only gets pulled in because Python runs a package's
+    /// `__init__.py` before its submodules, e.g. `pkg` in `from pkg.mod import x`.
+    Internal {
+        modules: Vec<usize>,
+        parents: Vec<usize>,
+    },
     /// Third-party or stdlib. Ignored for selection.
     External,
     /// Looks like it should be in this repo but we couldn't find it.
@@ -178,36 +183,54 @@ impl Project {
             return Resolution::External;
         }
 
-        let mut found = BTreeSet::new();
+        let mut explicit = BTreeSet::new();
+        let mut implicit = BTreeSet::new();
 
         // the module itself, or for `from pkg import sub` the submodules
         let base_hits = self.lookup(&base);
-        found.extend(base_hits.iter().copied());
-        let mut submodule_hit = false;
+        let mut all_names_are_submodules = !imp.names.is_empty();
         for name in &imp.names {
-            if name == "*" {
-                continue;
-            }
-            let hits = self.lookup(&format!("{base}.{name}"));
-            submodule_hit |= !hits.is_empty();
-            found.extend(hits.iter().copied());
+            let hits = if name == "*" {
+                &[][..]
+            } else {
+                self.lookup(&format!("{base}.{name}"))
+            };
+            all_names_are_submodules &= !hits.is_empty();
+            explicit.extend(hits.iter().copied());
         }
 
-        if base_hits.is_empty() && !submodule_hit {
+        if base_hits.is_empty() && explicit.is_empty() {
             return Resolution::Unresolved {
                 reason: format!("can't find module `{base}` (line {})", imp.line),
             };
         }
 
-        // importing a.b.c runs a/__init__.py and a/b/__init__.py first
+        // `from pkg import sub` only runs pkg/__init__.py, it doesn't use anything from it
+        if all_names_are_submodules {
+            implicit.extend(base_hits.iter().copied());
+        } else {
+            explicit.extend(base_hits.iter().copied());
+        }
+
+        // importing a.b.c runs a/__init__.py and a/b/__init__.py first. A plain
+        // `import a.b.c` also binds `a`, so there it's a real use.
         let parts: Vec<&str> = base.split('.').collect();
         for i in 1..parts.len() {
-            found.extend(self.lookup(&parts[..i].join(".")).iter().copied());
+            let hits = self.lookup(&parts[..i].join("."));
+            if imp.names.is_empty() {
+                explicit.extend(hits.iter().copied());
+            } else {
+                implicit.extend(hits.iter().copied());
+            }
         }
-        found.remove(&from);
+        explicit.remove(&from);
+        implicit.remove(&from);
+        let parents: Vec<usize> = implicit.difference(&explicit).copied().collect();
+        explicit.extend(implicit);
 
         Resolution::Internal {
-            modules: found.into_iter().collect(),
+            modules: explicit.into_iter().collect(),
+            parents,
         }
     }
 }
@@ -314,7 +337,7 @@ mod tests {
 
     fn names(p: &Project, r: &Resolution) -> Vec<String> {
         match r {
-            Resolution::Internal { modules } => {
+            Resolution::Internal { modules, .. } => {
                 modules.iter().map(|&i| p.modules[i].name.clone()).collect()
             }
             other => panic!("expected internal, got {other:?}"),
@@ -353,6 +376,26 @@ mod tests {
             names(&p, &resolve(&p, 3, 0)),
             vec!["flask", "flask.globals"]
         );
+    }
+
+    fn parents(p: &Project, r: &Resolution) -> Vec<String> {
+        match r {
+            Resolution::Internal { parents, .. } => {
+                parents.iter().map(|&i| p.modules[i].name.clone()).collect()
+            }
+            other => panic!("expected internal, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parent_packages_are_marked() {
+        let p = project();
+        // from .json.tag import T: flask and flask.json only run, T comes from tag
+        assert_eq!(parents(&p, &resolve(&p, 1, 1)), vec!["flask", "flask.json"]);
+        // from . import json: json is a submodule, so flask/__init__ is just a parent
+        assert_eq!(parents(&p, &resolve(&p, 1, 0)), vec!["flask"]);
+        // import flask: a real use
+        assert!(parents(&p, &resolve(&p, 5, 0)).is_empty());
     }
 
     #[test]

@@ -187,7 +187,7 @@ fn imports(path: PathBuf, all: bool, json: bool) -> Result<()> {
         let mut unresolved = Vec::new();
         for imp in &m.parsed.imports {
             match project.resolve(id, imp) {
-                Resolution::Internal { modules } => {
+                Resolution::Internal { modules, .. } => {
                     for target in modules {
                         imports.push(project.modules[target].name.clone());
                     }

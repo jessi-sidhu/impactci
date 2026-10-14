@@ -16,7 +16,7 @@ fn edges(p: &Project) -> BTreeMap<String, Vec<String>> {
     for (id, m) in p.modules.iter().enumerate() {
         let mut deps = Vec::new();
         for imp in &m.parsed.imports {
-            if let Resolution::Internal { modules } = p.resolve(id, imp) {
+            if let Resolution::Internal { modules, .. } = p.resolve(id, imp) {
                 deps.extend(modules.into_iter().map(|t| p.modules[t].name.clone()));
             }
         }

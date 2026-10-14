@@ -22,6 +22,11 @@ inputs:
   args:
     description: Extra flags for blast, e.g. `--shallow-init`.
     default: ""
+  shadow:
+    description: >
+      Run the full suite anyway and report what blast would have skipped, and whether it
+      would have missed a failure. Needs pytest. Use this to build trust before switching.
+    default: "false"
   token:
     description: Token used for the PR comment.
     default: ${{ github.token }}
@@ -138,8 +143,68 @@ runs:
         cat "$out/comment.md" >> "$GITHUB_STEP_SUMMARY"
         echo "blast: mode=$mode, $count test files"
 
+    - name: Run tests
+      id: tests
+      if: inputs.run != ''
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        MODE: ${{ steps.select.outputs.mode }}
+        TESTS: ${{ steps.select.outputs.tests }}
+        RUN: ${{ inputs.run }}
+        SHADOW: ${{ inputs.shadow }}
+      run: |
+        set +e
+        out="${RUNNER_TEMP}/blast"
+        mkdir -p "$out"
+        if [ "$SHADOW" = "true" ]; then
+          # run everything, keep timings to compare against the selection afterwards
+          echo "+ $RUN (shadow mode: full suite)"
+          eval "$RUN" --junitxml="$out/junit.xml" -o junit_family=xunit1
+          code=$?
+        elif [ "$MODE" = "selected" ] && [ -z "$TESTS" ]; then
+          echo "blast: no tests affected by this change, skipping"
+          code=0
+        elif [ "$MODE" = "selected" ]; then
+          echo "+ $RUN $TESTS"
+          # shellcheck disable=SC2086
+          eval "$RUN" $TESTS
+          code=$?
+        else
+          echo "+ $RUN"
+          eval "$RUN"
+          code=$?
+        fi
+        echo "code=$code" >> "$GITHUB_OUTPUT"
+
+    - name: Compare with full run
+      id: shadow
+      if: always() && inputs.shadow == 'true' && steps.select.outputs.comment && steps.tests.outcome == 'success'
+      shell: bash
+      working-directory: ${{ inputs.path }}
+      env:
+        BLAST_PR: ${{ github.event.pull_request.number }}
+      run: |
+        out="${RUNNER_TEMP}/blast"
+        if [ -f "$out/junit.xml" ]; then
+          python3 "${{ github.action_path }}/scripts/shadow.py" \
+            "$out/selection.json" "$out/junit.xml" "$out/shadow.json" "${{ steps.select.outputs.comment }}"
+          tail -n 4 "${{ steps.select.outputs.comment }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "recorded=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "::warning::blast: no junit.xml from the test run, is it pytest?"
+        fi
+
+    - name: Upload shadow record
+      if: always() && steps.shadow.outputs.recorded == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: blast-shadow-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/blast/shadow.json
+        retention-days: 90
+
     - name: Comment on PR
-      if: inputs.comment == 'true' && github.event.pull_request.number && steps.select.outputs.comment
+      if: always() && inputs.comment == 'true' && github.event.pull_request.number && steps.select.outputs.comment
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
@@ -159,25 +224,9 @@ runs:
             || echo "::warning::blast: couldn't post a PR comment (needs pull-requests: write)"
         fi
 
-    - name: Run tests
-      if: inputs.run != ''
+    - name: Fail if tests failed
+      if: always() && steps.tests.outputs.code && steps.tests.outputs.code != '0'
       shell: bash
-      working-directory: ${{ inputs.path }}
-      env:
-        MODE: ${{ steps.select.outputs.mode }}
-        TESTS: ${{ steps.select.outputs.tests }}
-        RUN: ${{ inputs.run }}
       run: |
-        set -eo pipefail
-        if [ "$MODE" = "selected" ] && [ -z "$TESTS" ]; then
-          echo "blast: no tests affected by this change, skipping"
-          exit 0
-        fi
-        if [ "$MODE" = "selected" ]; then
-          echo "+ $RUN $TESTS"
-          # shellcheck disable=SC2086
-          eval "$RUN" $TESTS
-        else
-          echo "+ $RUN"
-          eval "$RUN"
-        fi
+        echo "tests exited with ${{ steps.tests.outputs.code }}"
+        exit ${{ steps.tests.outputs.code }}

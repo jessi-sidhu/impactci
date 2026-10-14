@@ -47,6 +47,9 @@ struct RunArgs {
     /// Also write the PR comment markdown to this file
     #[arg(long)]
     markdown_out: Option<PathBuf>,
+    /// Test file patterns, overriding pytest's `python_files` (repeatable)
+    #[arg(long, value_name = "GLOB")]
+    python_files: Vec<String>,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -116,7 +119,10 @@ fn main() -> Result<()> {
 }
 
 fn run(args: RunArgs) -> Result<()> {
-    let project = Project::load(&args.path)?;
+    let mut project = Project::load(&args.path)?;
+    if !args.python_files.is_empty() {
+        project.test_patterns = args.python_files.clone();
+    }
     let mut graph = Graph::build(&project);
     graph.shallow_init = args.shallow_init;
     let (changed, prefix) = changes_in_project(&args.path, &args.diff)?;

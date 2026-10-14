@@ -1,0 +1,282 @@
+[
+  {
+    "sha": "6f66281a1d",
+    "subject": "Add hasattr checks for remaining protocol isinstance checks (#7505)",
+    "changed": [
+      "src/requests/_types.py",
+      "src/requests/models.py",
+      "tests/test_requests.py"
+    ],
+    "mutated": {
+      "src/requests/_types.py": [
+        "has_read"
+      ],
+      "src/requests/models.py": [
+        "PreparedRequest.prepare_body",
+        "RequestEncodingMixin._encode_files",
+        "RequestEncodingMixin._encode_params"
+      ]
+    },
+    "total_tests": 635,
+    "total_seconds": 73.24,
+    "regressions": 273,
+    "regression_files": [
+      "tests/test_adapters.py",
+      "tests/test_lowlevel.py",
+      "tests/test_requests.py",
+      "tests/test_testserver.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 635,
+        "seconds": 73.24,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 605,
+        "seconds": 73.24,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 365,
+        "seconds": 62.03,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "6f205ff422",
+    "subject": "Fix `_encode_files` detection for `__getattr__`-based file wrappers (#75",
+    "changed": [
+      "src/requests/models.py",
+      "tests/test_requests.py"
+    ],
+    "mutated": {
+      "src/requests/models.py": [
+        "RequestEncodingMixin._encode_files"
+      ]
+    },
+    "total_tests": 634,
+    "total_seconds": 73.12,
+    "regressions": 19,
+    "regression_files": [
+      "tests/test_requests.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 634,
+        "seconds": 73.12,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 375,
+        "seconds": 72.45,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 340,
+        "seconds": 38.64,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "661970d171",
+    "subject": "Disable commonly ignored Pyright linting rules (#7497)",
+    "changed": [
+      "pyproject.toml",
+      "src/requests/__init__.py",
+      "src/requests/adapters.py",
+      "src/requests/auth.py",
+      "src/requests/compat.py",
+      "src/requests/cookies.py",
+      "src/requests/help.py",
+      "src/requests/models.py",
+      "src/requests/sessions.py",
+      "src/requests/utils.py"
+    ],
+    "mutated": {
+      "src/requests/auth.py": [
+        "HTTPDigestAuth.handle_401",
+        "_basic_auth_str"
+      ],
+      "src/requests/cookies.py": [
+        "merge_cookies"
+      ],
+      "src/requests/help.py": [
+        "info"
+      ],
+      "src/requests/models.py": [
+        "RequestEncodingMixin._encode_files",
+        "RequestHooksMixin.register_hook",
+        "Response.iter_content"
+      ],
+      "src/requests/sessions.py": [
+        "SessionRedirectMixin.resolve_redirects"
+      ],
+      "src/requests/utils.py": [
+        "_validate_header_part",
+        "rewind_body"
+      ]
+    },
+    "total_tests": 633,
+    "total_seconds": 72.89,
+    "regressions": 284,
+    "regression_files": [
+      "tests/test_adapters.py",
+      "tests/test_help.py",
+      "tests/test_lowlevel.py",
+      "tests/test_requests.py",
+      "tests/test_testserver.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 633,
+        "seconds": 72.89,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 633,
+        "seconds": 72.89,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 285,
+        "seconds": 61.71,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "1190afd14f",
+    "subject": "Add type annotation for `Request.hooks` (#7498)",
+    "changed": [
+      "src/requests/models.py"
+    ],
+    "mutated": {},
+    "total_tests": 633,
+    "total_seconds": 72.93,
+    "regressions": 0,
+    "regression_files": [],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 633,
+        "seconds": 72.93,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 374,
+        "seconds": 72.32,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 298,
+        "seconds": 61.79,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "e50e594529",
+    "subject": "Improve static typing of 3rd party imports  (#7496)",
+    "changed": [
+      "pyproject.toml",
+      "src/requests/__init__.py",
+      "src/requests/compat.py",
+      "src/requests/help.py",
+      "src/requests/models.py"
+    ],
+    "mutated": {
+      "src/requests/help.py": [
+        "_implementation"
+      ],
+      "src/requests/models.py": [
+        "RequestEncodingMixin._encode_files",
+        "Response.iter_lines"
+      ]
+    },
+    "total_tests": 633,
+    "total_seconds": 72.91,
+    "regressions": 22,
+    "regression_files": [
+      "tests/test_help.py",
+      "tests/test_requests.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 633,
+        "seconds": 72.91,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "full",
+        "tests": 633,
+        "seconds": 72.91,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 23,
+        "seconds": 0.05,
+        "missed": []
+      }
+    },
+    "notes": []
+  },
+  {
+    "sha": "cd90742ed9",
+    "subject": "docs: indent continuation line in Session.get :param params: (#7460)",
+    "changed": [
+      "src/requests/sessions.py"
+    ],
+    "mutated": {
+      "src/requests/sessions.py": [
+        "Session.get"
+      ]
+    },
+    "total_tests": 633,
+    "total_seconds": 72.91,
+    "regressions": 29,
+    "regression_files": [
+      "tests/test_requests.py"
+    ],
+    "variants": {
+      "blast": {
+        "mode": "full",
+        "tests": 633,
+        "seconds": 72.91,
+        "missed": []
+      },
+      "blast --shallow-init": {
+        "mode": "selected",
+        "tests": 374,
+        "seconds": 72.29,
+        "missed": []
+      },
+      "testmon (warm db)": {
+        "mode": "selected",
+        "tests": 29,
+        "seconds": 7.84,
+        "missed": []
+      }
+    },
+    "notes": []
+  }
+]

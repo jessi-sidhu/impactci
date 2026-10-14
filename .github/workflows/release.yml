@@ -1,0 +1,43 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release --locked
+      - run: tar -czf blast-${{ matrix.target }}.tar.gz -C target/release blast
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blast-${{ matrix.target }}
+          path: blast-${{ matrix.target }}.tar.gz
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --generate-notes blast-*.tar.gz \
+            || gh release upload "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --clobber blast-*.tar.gz
